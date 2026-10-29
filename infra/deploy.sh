@@ -6,6 +6,11 @@ set -euo pipefail
 
 STACK="${STACK_NAME:-casaguapo}"
 REGION="${AWS_REGION:-us-east-1}"
+# Optional custom domain: DOMAIN_NAME=www.example.com CERT_ARN=arn:aws:acm:us-east-1:... ./infra/deploy.sh
+OVERRIDES=()
+if [[ -n "${DOMAIN_NAME:-}" && -n "${CERT_ARN:-}" ]]; then
+  OVERRIDES=(--parameter-overrides "DomainName=$DOMAIN_NAME" "CertificateArn=$CERT_ARN")
+fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 echo "→ Installing dependencies"
@@ -20,7 +25,8 @@ sam deploy \
   --region "$REGION" \
   --capabilities CAPABILITY_IAM \
   --resolve-s3 \
-  --no-fail-on-empty-changeset
+  --no-fail-on-empty-changeset \
+  ${OVERRIDES[@]+"${OVERRIDES[@]}"}
 
 output() {
   aws cloudformation describe-stacks --stack-name "$STACK" --region "$REGION" \
@@ -43,3 +49,6 @@ echo "→ Invalidating CloudFront"
 aws cloudfront create-invalidation --distribution-id "$DIST" --paths "/*" >/dev/null
 
 echo "✓ Live at $(output SiteUrl)"
+if [[ -n "${DOMAIN_NAME:-}" ]]; then
+  echo "  DNS: point a CNAME for $DOMAIN_NAME to $(output CloudFrontDomain)"
+fi

@@ -64,7 +64,25 @@ Prerequisites: AWS CLI v2, [SAM CLI](https://docs.aws.amazon.com/serverless-appl
 
    The script builds and deploys the stack, builds the site, uploads it to the bucket and invalidates CloudFront. It prints the site URL when it's done.
 
-To use a custom domain, add an ACM certificate (in `us-east-1`) and `Aliases` to the CloudFront distribution in `infra/template.yaml`.
+### Custom domain
+
+1. Request a certificate in `us-east-1` (CloudFront only uses certificates from that region), validated by DNS:
+
+   ```sh
+   aws acm request-certificate --region us-east-1 --domain-name www.example.com --validation-method DNS
+   aws acm describe-certificate --region us-east-1 --certificate-arn <arn> \
+     --query "Certificate.DomainValidationOptions[0].ResourceRecord"
+   ```
+
+   Add the CNAME it prints at your DNS provider and wait until the certificate's status is `ISSUED`.
+
+2. Deploy with the domain. Always pass both variables, or a later deploy will remove the domain:
+
+   ```sh
+   DOMAIN_NAME=www.example.com CERT_ARN=<arn> ./infra/deploy.sh
+   ```
+
+3. Point a CNAME for `www` at the `CloudFrontDomain` the script prints. Providers such as GoDaddy can't put a CNAME on the bare domain, so forward `example.com` to `https://www.example.com` instead.
 
 ## Images
 

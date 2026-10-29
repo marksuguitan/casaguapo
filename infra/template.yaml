@@ -19,6 +19,19 @@ Parameters:
   ApiBurstLimit:
     Type: Number
     Default: 10
+  DomainName:
+    Type: String
+    Default: ''
+    Description: Optional custom domain for the site, e.g. www.example.com. Requires CertificateArn.
+  CertificateArn:
+    Type: String
+    Default: ''
+    Description: ARN of an issued ACM certificate in us-east-1 that covers DomainName.
+
+Conditions:
+  HasCustomDomain: !And
+    - !Not [!Equals [!Ref DomainName, '']]
+    - !Not [!Equals [!Ref CertificateArn, '']]
 
 Globals:
   Function:
@@ -134,6 +147,13 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
+        Aliases: !If [HasCustomDomain, [!Ref DomainName], !Ref AWS::NoValue]
+        ViewerCertificate: !If
+          - HasCustomDomain
+          - AcmCertificateArn: !Ref CertificateArn
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+          - !Ref AWS::NoValue
         HttpVersion: http2and3
         DefaultRootObject: index.html
         PriceClass: PriceClass_100
@@ -173,7 +193,13 @@ Resources:
 
 Outputs:
   SiteUrl:
-    Value: !Sub 'https://${Distribution.DomainName}'
+    Value: !If
+      - HasCustomDomain
+      - !Sub 'https://${DomainName}'
+      - !Sub 'https://${Distribution.DomainName}'
+  CloudFrontDomain:
+    Description: Point your domain's CNAME record here.
+    Value: !GetAtt Distribution.DomainName
   BucketName:
     Value: !Ref SiteBucket
   DistributionId:
