@@ -81,11 +81,24 @@ const isActive = (href: string) => href !== '/#house' && path.startsWith(href.re
     opacity: 0;
     transition: opacity 0.6s var(--ease);
   }
-  .site-header.is-scrolled {
+  /* The frosted backdrop lives on a pseudo-element: backdrop-filter on the header itself would make it the
+     containing block for the fixed mobile menu, squashing the menu to the header's height. */
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: rgba(249, 246, 239, 0.86);
     backdrop-filter: saturate(140%) blur(18px);
     -webkit-backdrop-filter: saturate(140%) blur(18px);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
+  }
+  .site-header.is-scrolled {
     height: 72px;
+  }
+  .site-header.is-scrolled::before {
+    opacity: 1;
   }
   .site-header.is-scrolled::after {
     opacity: 1;
