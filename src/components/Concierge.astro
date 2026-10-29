@@ -580,8 +580,8 @@ import Icon from './Icon.astro';
   const pending = session.take(PENDING_KEY);
   if (pending) window.setTimeout(() => showRemark(`${pending}, and arrived on this page`), 1200);
 
+  // Dismissing only hides the bubble; if she's nagging, her next line brings it back. Only opening the chat stops her.
   root.querySelector('[data-remark-close]')!.addEventListener('click', () => {
-    stopNagging();
     remarkBox.hidden = true;
   });
   remarkBox.addEventListener('click', (e) => {
@@ -646,7 +646,7 @@ import Icon from './Icon.astro';
   }
 
   // Jasmin starts talking 2 seconds after the visitor first scrolls (once per visit) and adds another line every
-  // 10 seconds until the visitor clicks her, up to MAX_NAGS lines. Claude writes every line, seeing her earlier
+  // 13 seconds until the visitor clicks her, up to MAX_NAGS lines. Claude writes every line, seeing her earlier
   // ones so she doesn't repeat herself; NAGS is the fallback when the API is unavailable.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
   const MAX_NAGS = 50;
@@ -756,7 +756,7 @@ import Icon from './Icon.astro';
     while (remarkText.childElementCount > 3) remarkText.firstElementChild!.remove();
     window.clearTimeout(hideTimer);
     remarkBox.hidden = false;
-    nagTimer = window.setTimeout(nag, 10_000);
+    nagTimer = window.setTimeout(nag, 13_000);
   }
 
   // Clicking Jasmin (her bubble or her avatar) opens the chat, continuing from whatever she just said.
