@@ -96,6 +96,23 @@ DOMAIN_NAME=example.com HOSTED_ZONE_ID=Z0123456789 ./infra/deploy.sh
 
 The stack then issues the certificate and creates the alias records itself. Deploy in `us-east-1`.
 
+## Automatic deploys
+
+`.github/workflows/deploy.yml` runs the API tests and `infra/deploy.sh` on every push to `main` (including merged pull requests), and can be run by hand from the Actions tab. It signs in to AWS through GitHub's OIDC, so no AWS keys are stored in GitHub.
+
+One-time setup:
+
+1. Create the deploy role. If this AWS account already has a GitHub OIDC provider, add `--parameter-overrides CreateOidcProvider=false`.
+
+   ```sh
+   aws cloudformation deploy --stack-name casaguapo-github --template-file infra/github-deploy-role.yaml \
+     --capabilities CAPABILITY_NAMED_IAM --region us-east-1
+   aws cloudformation describe-stacks --stack-name casaguapo-github --region us-east-1 \
+     --query "Stacks[0].Outputs[0].OutputValue" --output text
+   ```
+
+2. In GitHub, under Settings → Secrets and variables → Actions → Variables, add `AWS_DEPLOY_ROLE_ARN` (the ARN printed above), plus `DOMAIN_NAME` and `CERT_ARN` if the site uses a custom domain. These are not secrets.
+
 ## Images
 
 Editorial photography is loaded from Unsplash. Each image sits on a toned backdrop, so a photo that fails to load leaves a tasteful gradient rather than a broken image. To self-host, put files in `public/images/` and update `src/data/site.ts`.

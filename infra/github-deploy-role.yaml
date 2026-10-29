@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  IAM role that GitHub Actions assumes (via OIDC, no stored keys) to deploy Casaguapo
+  from the main branch. Deploy once, by hand; see README.
+
+Parameters:
+  GitHubRepo:
+    Type: String
+    Default: marksuguitan/casaguapo
+    Description: owner/name of the repository allowed to assume the role.
+  Branch:
+    Type: String
+    Default: main
+  CreateOidcProvider:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Default: 'true'
+    Description: Set to false if this AWS account already has the token.actions.githubusercontent.com provider.
+
+Conditions:
+  CreateProvider: !Equals [!Ref CreateOidcProvider, 'true']
+
+Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: casaguapo-github-deploy
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateProvider
+                - !Ref GitHubOidcProvider
+                - !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                # Only workflow runs on this repository's main branch.
+                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubRepo}:ref:refs/heads/${Branch}'
+      # SAM creates IAM roles, Lambda, API Gateway, CloudFront, S3, ACM and Route 53 resources, so the
+      # role needs broad rights. The trust policy above is what keeps it to this repo's main branch.
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+Outputs:
+  RoleArn:
+    Description: Set this as the AWS_DEPLOY_ROLE_ARN repository variable in GitHub.
+    Value: !GetAtt DeployRole.Arn
