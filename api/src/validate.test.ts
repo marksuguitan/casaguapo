@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRequest, MAX_CHARS, MAX_TURNS } from './validate.ts';
+import { parseRequest, MAX_CHARS, MAX_TURNS, OPENED_CHAT } from './validate.ts';
 
-test('accepts a chat that starts with the Concierge greeting', () => {
+test('keeps the Concierge’s opening line, behind a stand-in visitor turn', () => {
   const req = parseRequest({
     mode: 'chat',
     messages: [
@@ -10,7 +10,15 @@ test('accepts a chat that starts with the Concierge greeting', () => {
       { role: 'user', content: 'Hello' },
     ],
   });
-  assert.deepEqual(req, { mode: 'chat', messages: [{ role: 'user', content: 'Hello' }], turn: 1 });
+  assert.deepEqual(req, {
+    mode: 'chat',
+    messages: [
+      { role: 'user', content: OPENED_CHAT },
+      { role: 'assistant', content: 'Good evening.' },
+      { role: 'user', content: 'Hello' },
+    ],
+    turn: 1,
+  });
 });
 
 test('rejects chats that do not end on a user turn or that repeat roles', () => {

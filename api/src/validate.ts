@@ -2,8 +2,9 @@ import type Anthropic from '@anthropic-ai/sdk';
 
 export const MAX_TURNS = 12;
 export const MAX_CHARS = 600;
+export const OPENED_CHAT = '(The visitor opens the chat.)';
 /** Jasmin answers this many chat messages per visitor, then leaves the chat. */
-export const MAX_CHAT_REPLIES = 20;
+export const MAX_CHAT_REPLIES = 30;
 
 export type ConciergeRequest =
   | { mode: 'chat'; messages: Anthropic.MessageParam[]; turn: number }
@@ -44,8 +45,12 @@ export function parseRequest(raw: unknown): ConciergeRequest | null {
       if (!text) return null;
       messages.push({ role, content: text });
     }
-    // The client keeps the Concierge's opening line; the API needs a user turn first.
-    while (messages.length && messages[0].role !== 'user') messages.shift();
+    // The chat opens with a line from Jasmin, which she should remember. The API needs a user turn
+    // first, so a stand-in turn introduces it.
+    if (messages.length && messages[0].role === 'assistant') {
+      if (messages.length >= MAX_TURNS) messages.shift();
+      else messages.unshift({ role: 'user', content: OPENED_CHAT });
+    }
     if (!messages.length || messages[messages.length - 1].role !== 'user') return null;
     for (let i = 1; i < messages.length; i++) {
       if (messages[i].role === messages[i - 1].role) return null;

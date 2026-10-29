@@ -11,7 +11,7 @@ import Icon from './Icon.astro';
         <Icon name="close" size={14} />
       </button>
     </div>
-    <p class="concierge__remark-text" data-remark-text></p>
+    <div class="concierge__remark-text" data-remark-text></div>
   </div>
 
   <section class="concierge__panel" data-panel hidden aria-label="Talk to Jasmin">
@@ -192,6 +192,13 @@ import Icon from './Icon.astro';
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+  .concierge__remark-text :global(.concierge__nag) {
+    margin: 0;
+    animation: concierge-in 0.5s var(--ease);
+  }
+  .concierge__remark-text :global(.concierge__nag + .concierge__nag) {
+    margin-top: 10px;
   }
   .concierge__remark-text {
     margin: 12px 0 0;
@@ -407,6 +414,7 @@ import Icon from './Icon.astro';
   const HISTORY_KEY = 'cg-remarks';
   const SENT_KEY = 'cg-chat-sent';
   const LEFT_KEY = 'cg-jasmin-left';
+  const LOCKOUT_MS = 24 * 60 * 60 * 1000;
 
   const root = document.querySelector<HTMLElement>('[data-concierge-root]')!;
   const remarkBox = root.querySelector<HTMLElement>('[data-remark]')!;
@@ -453,7 +461,18 @@ import Icon from './Icon.astro';
         localStorage.setItem(key, value);
       } catch {}
     },
+    remove(key: string) {
+      try {
+        localStorage.removeItem(key);
+      } catch {}
+    },
   };
+
+  // Jasmin comes back, with a fresh allowance, 24 hours after she leaves.
+  if (Date.now() - Number(local.get(LEFT_KEY) ?? Infinity) > LOCKOUT_MS) {
+    local.remove(LEFT_KEY);
+    local.remove(SENT_KEY);
+  }
 
   const typingDots = () => {
     const el = document.createElement('span');
@@ -477,15 +496,21 @@ import Icon from './Icon.astro';
     }
   };
 
+  // The remark on screen; clicking it opens the chat with that remark as Jasmin's opening line.
+  let lastRemark: string | null = null;
+  // True while Jasmin is nagging on her own after the page loads (see nag()).
+  let nagging = false;
+
   async function showRemark(action: string) {
     const count = Number(session.get(COUNT_KEY) ?? 0);
     const now = Date.now();
-    if (inFlight || !panel.hidden || count >= MAX_REMARKS || now - lastRemarkAt < COOLDOWN_MS) return;
+    if (nagging || inFlight || !panel.hidden || count >= MAX_REMARKS || now - lastRemarkAt < COOLDOWN_MS) return;
     inFlight = true;
     lastRemarkAt = now;
     session.set(COUNT_KEY, String(count + 1));
 
     window.clearTimeout(hideTimer);
+    lastRemark = null;
     remarkText.replaceChildren(typingDots());
     remarkBox.hidden = false;
 
@@ -493,6 +518,7 @@ import Icon from './Icon.astro';
     const text = await remark(action, previous);
     session.set(HISTORY_KEY, JSON.stringify([...previous, text].slice(-5)));
     remarkText.textContent = text;
+    lastRemark = text;
     inFlight = false;
     hideTimer = window.setTimeout(() => (remarkBox.hidden = true), 9000);
   }
@@ -554,9 +580,12 @@ import Icon from './Icon.astro';
   const pending = session.take(PENDING_KEY);
   if (pending) window.setTimeout(() => showRemark(`${pending}, and arrived on this page`), 1200);
 
-  root.querySelector('[data-remark-close]')!.addEventListener('click', () => (remarkBox.hidden = true));
+  root.querySelector('[data-remark-close]')!.addEventListener('click', () => {
+    stopNagging();
+    remarkBox.hidden = true;
+  });
   remarkBox.addEventListener('click', (e) => {
-    if (!(e.target as HTMLElement).closest('[data-remark-close]')) openPanel();
+    if (!(e.target as HTMLElement).closest('[data-remark-close]')) openFromJasmin();
   });
 
   // Lets other scripts (e.g. the application form) ask for a remark.
@@ -593,7 +622,9 @@ import Icon from './Icon.astro';
   window.visualViewport?.addEventListener('scroll', fitPanel);
 
   // `auto` is Jasmin opening the chat herself: no focus, so phones don't throw up the keyboard.
-  function openPanel(auto = false) {
+  // `opener` is what Jasmin just said (one or more lines), which the conversation then continues from.
+  function openPanel(auto = false, opener: string | string[] | null = null) {
+    const lines = opener === null ? [] : ([] as string[]).concat(opener);
     remarkBox.hidden = true;
     panel.hidden = false;
     session.set(AUTO_OPEN_KEY, '1');
@@ -602,43 +633,91 @@ import Icon from './Icon.astro';
     launcher.setAttribute('aria-expanded', 'true');
     if (!log.childElementCount) {
       if (local.get(LEFT_KEY)) leaveChat();
-      else addMessage('assistant', turns[0].content);
+      else if (lines.length) {
+        turns[0].content = lines.join('\n\n');
+        lines.forEach((line) => addMessage('assistant', line));
+      } else addMessage('assistant', turns[0].content);
+    } else if (lines.length && !input.disabled && !chatting) {
+      // Mid-conversation: add them as more lines from Jasmin, folded into her last turn so roles still alternate.
+      lines.forEach((line) => addMessage('assistant', line));
+      turns[turns.length - 1].content += `\n\n${lines.join('\n\n')}`;
     }
     if (!input.disabled && !auto) input.focus();
   }
 
-  // Jasmin starts a chat 2 seconds after the visitor first scrolls, once per visit.
+  // Jasmin starts talking 2.5 seconds after the page loads (once per visit) and adds another line every
+  // 2 seconds until the visitor clicks her. The first line is written by Claude; the rest are pre-written,
+  // so the nagging costs one API call, and she gives up after MAX_NAGS lines.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
-  if (!session.get(AUTO_OPEN_KEY) && !local.get(LEFT_KEY)) {
-    window.addEventListener(
-      'scroll',
-      () => {
-        window.setTimeout(() => {
-          if (!panel.hidden || session.get(AUTO_OPEN_KEY)) return;
-          session.set(AUTO_OPEN_KEY, '1');
-          if (!log.childElementCount) {
-            turns[0].content = 'Oh, you’re scrolling. Sweetie, the prices don’t get lower further down. I checked. What do you want?';
-          }
-          openPanel(true);
-        }, 2000);
-      },
-      { once: true, passive: true },
-    );
+  const MAX_NAGS = 8;
+  const NAGS = [
+    'Hello? I can see you, you know.',
+    'Still there? Your silence is very… economy class.',
+    'Sweetie, clicking me is free. It’s the only free thing here.',
+    'I’ve had billionaires answer me faster from a helicopter.',
+    'Fine. I’ll just keep talking. I’m used to people who can’t afford to reply.',
+    'Is your data plan rationing your typing? Bless.',
+    'Okay, I’m going back to my yacht people. Click me if you dare.',
+  ];
+  const nags: string[] = [];
+  let nagTimer: number | undefined;
+
+  function stopNagging() {
+    nagging = false;
+    window.clearTimeout(nagTimer);
   }
+
+  async function nag() {
+    if (!nagging || !panel.hidden || nags.length >= MAX_NAGS) return stopNagging();
+    if (!nags.length) {
+      remarkText.replaceChildren(typingDots());
+      remarkBox.hidden = false;
+    }
+    const text = nags.length
+      ? NAGS[(nags.length - 1) % NAGS.length]
+      : await remark('just arrived on the website and has not said or clicked anything yet', []);
+    if (!nagging || !panel.hidden) return;
+    nags.push(text);
+    if (nags.length === 1) remarkText.replaceChildren();
+    const line = document.createElement('p');
+    line.className = 'concierge__nag';
+    line.textContent = text;
+    remarkText.append(line);
+    // Keep the bubble to her latest three lines.
+    while (remarkText.childElementCount > 3) remarkText.firstElementChild!.remove();
+    window.clearTimeout(hideTimer);
+    remarkBox.hidden = false;
+    nagTimer = window.setTimeout(nag, 2000);
+  }
+
+  // Clicking Jasmin (her bubble or her avatar) opens the chat, continuing from whatever she just said.
+  function openFromJasmin() {
+    const said = nags.length ? [...nags] : lastRemark;
+    stopNagging();
+    nags.length = 0;
+    openPanel(false, said);
+  }
+
+  if (!session.get(AUTO_OPEN_KEY) && !local.get(LEFT_KEY)) {
+    session.set(AUTO_OPEN_KEY, '1');
+    nagging = true;
+    nagTimer = window.setTimeout(nag, 2500);
+  }
+
   function closePanel() {
     panel.hidden = true;
     document.documentElement.classList.remove('concierge-open');
     launcher.setAttribute('aria-expanded', 'false');
   }
 
-  launcher.addEventListener('click', () => (panel.hidden ? openPanel() : closePanel()));
+  launcher.addEventListener('click', () => (panel.hidden ? openFromJasmin() : closePanel()));
   root.querySelector('[data-panel-close]')!.addEventListener('click', closePanel);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
   function leaveChat() {
-    local.set(LEFT_KEY, '1');
+    if (!local.get(LEFT_KEY)) local.set(LEFT_KEY, String(Date.now()));
     const notice = document.createElement('p');
     notice.className = 'concierge__left';
     notice.textContent = 'Jasmin left the chat';
