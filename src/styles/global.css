@@ -357,14 +357,18 @@ textarea {
 }
 .js [data-reveal='mask'] {
   transform: none;
-  clip-path: inset(0 0 100% 0 round var(--radius));
-  transition:
-    clip-path 1.6s var(--ease),
-    opacity 0.4s;
+  transition: opacity 0.4s;
   transition-delay: var(--d, 0s);
 }
-.js [data-reveal='mask'].is-in {
-  clip-path: inset(0 0 0 0 round var(--radius));
+/* The wipe clips the children, not the observed element: browsers treat a fully clipped element as not
+   intersecting, so clipping the element itself meant it never revealed. */
+.js [data-reveal='mask'] > * {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.6s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.js [data-reveal='mask'].is-in > * {
+  clip-path: inset(0 0 0 0);
 }
 
 /* ---------- Page header (inner pages) ---------- */
