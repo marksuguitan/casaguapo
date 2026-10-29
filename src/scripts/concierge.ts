@@ -23,38 +23,38 @@ async function call(body: Record<string, unknown>): Promise<string | null> {
 const pick = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
 const REMARKS = [
-  'A bold click. I admire anyone who explores what they cannot afford.',
-  'I see you pressed that with your own finger. Our members have staff for this.',
-  'How industrious of you. Most of our clients haven’t clicked anything since 2014.',
-  'Do take your time. I understand the data plan may be shared.',
-  'That button has never been pressed by someone who flies commercial. Until now.',
-  'An interesting choice. I’ve made a note of it, in pencil.',
-  'Curiosity is free, which I suspect is why you have so much of it.',
-  'You navigate the site with the confidence of someone who rents.',
-  'Lovely. I can tell you’re browsing on a device you own outright, eventually.',
-  'Please, explore freely. We consider it a form of outreach.',
+  'Oh, you clicked that. Bold move for someone on a prepaid plan.',
+  'Careful, sweetie. Buttons here cost more than your rent.',
+  'I can hear your bank app crying from here.',
+  'You click like someone who checks the price before ordering water.',
+  'Mm-hm. Keep browsing. Window shopping is free, which I assume is the appeal.',
+  'Honey, the people who press that button have a guy who presses it for them.',
+  'Oh look, you found the button. Shall I alert the press?',
+  'Bless your heart, you really think you’re getting in.',
+  'Every time you click, a billionaire somewhere feels a little sad for you.',
+  'Is that a cracked screen I’m sensing? Don’t answer that.',
 ];
 
 const PRICING_REMARKS = [
-  'You lingered on the price. Our members never look at the price; they look at the font.',
-  'Ah, the Basic People Only tier. We keep it for exactly this kind of moment.',
-  'If you are converting that into months of rent, I would kindly ask you to stop.',
-  'Many visitors find the pricing aspirational. We find that charming.',
+  'Stop staring at the price, sweetie. It’s not getting smaller.',
+  'Basic People Only. Yeah, that tracks. 💅',
+  'You’re converting that to months of rent, aren’t you? Adorable.',
+  'Honey, that’s per month. Not per year. Breathe.',
 ];
 
 const FORM_REMARKS = [
-  'I see you are typing. Our members dictate.',
-  'Do be honest in the questionnaire. The committee can tell when a watch is on finance.',
-  'A fine answer. I will pass it to the committee, who will pass it back.',
-  'You fill in forms with real dedication. Paperwork is a lifestyle, I’m told.',
+  'You’re typing yourself? Our members have people for that.',
+  'Interesting answer. I’ll make sure the Committee laughs at it.',
+  'Wow. Filling in forms. Very hands-on. Very… budget.',
+  'Please don’t lie on the form, honey. We can tell when a watch is from a mall.',
 ];
 
 const CHAT_REPLIES = [
-  'How fascinating. I shall relay that to no one.',
-  'I understand completely, in the way one understands weather in other countries.',
-  'Of course. Have you considered the Basic People Only membership? It was designed with great compassion.',
-  'A wonderful question. The answer, I’m afraid, is $10,000 a month.',
-  'Splendid. I have noted it beside your application, which I have also noted.',
+  'Hmm. No. 🙄',
+  'Sweetie, that sounds like a question for someone who isn’t me.',
+  'I could answer that, but then you’d expect me to keep being helpful.',
+  'The answer is $10,000 a month. It’s always $10,000 a month.',
+  'Did you try asking someone in your price range?',
 ];
 
 function fallbackRemark(action: string): string {
@@ -76,5 +76,5 @@ export async function verdict(application: Record<string, string | string[]>): P
   const reply = await call({ mode: 'verdict', application });
   if (reply) return reply;
   const name = typeof application.address === 'string' && application.address ? application.address : 'Applicant';
-  return `Dear ${name}, thank you for your application, which the Committee has received and, for the time being, is holding at arm’s length. We were moved by your candour regarding your finances, and by your evident courage in submitting it regardless. Should the Committee wish to be in touch, it will be.`;
+  return `Dear ${name}, we got your application. We read it out loud at the staff meeting, and it was the highlight of everyone’s week. Don’t wait by the phone, honey; it’s not going to ring. — Jasmin, on behalf of the Committee`;
 }

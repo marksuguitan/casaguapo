@@ -6,7 +6,7 @@ import Icon from './Icon.astro';
   <div class="concierge__remark" data-remark hidden role="status" aria-live="polite">
     <div class="concierge__remark-head">
       <img class="concierge__avatar" src="/images/concierge.webp" alt="" width="36" height="36" />
-      <span class="concierge__label">The Concierge</span>
+      <span class="concierge__label">Jasmin</span>
       <button type="button" class="concierge__dismiss" data-remark-close aria-label="Dismiss">
         <Icon name="close" size={14} />
       </button>
@@ -14,12 +14,12 @@ import Icon from './Icon.astro';
     <p class="concierge__remark-text" data-remark-text></p>
   </div>
 
-  <section class="concierge__panel" data-panel hidden aria-label="Speak with the Concierge">
+  <section class="concierge__panel" data-panel hidden aria-label="Talk to Jasmin">
     <header class="concierge__panel-head">
       <img class="concierge__avatar" src="/images/concierge.webp" alt="" width="36" height="36" />
       <div>
-        <p class="concierge__title">The Concierge</p>
-        <p class="concierge__subtitle">At your service, within reason</p>
+        <p class="concierge__title">Jasmin</p>
+        <p class="concierge__subtitle">Concierge · Not here to help you</p>
       </div>
       <button type="button" class="concierge__dismiss" data-panel-close aria-label="Close">
         <Icon name="close" size={16} />
@@ -33,7 +33,7 @@ import Icon from './Icon.astro';
         name="message"
         autocomplete="off"
         maxlength="600"
-        placeholder="Speak freely. Within budget."
+        placeholder="Make it quick, sweetie…"
         data-chat-input
       />
       <button type="submit" class="concierge__send" aria-label="Send">
@@ -42,12 +42,12 @@ import Icon from './Icon.astro';
     </form>
   </section>
 
-  <button type="button" class="concierge__launcher" data-launcher aria-expanded="false" aria-label="Speak with the Concierge">
+  <button type="button" class="concierge__launcher" data-launcher aria-expanded="false" aria-label="Talk to Jasmin">
     <span class="concierge__launcher-avatar">
       <img src="/images/concierge.webp" alt="" width="34" height="34" />
       <span class="concierge__dot" aria-hidden="true"></span>
     </span>
-    Concierge
+    Jasmin
   </button>
 </div>
 
@@ -386,7 +386,7 @@ import Icon from './Icon.astro';
   const typingDots = () => {
     const el = document.createElement('span');
     el.className = 'typing';
-    el.setAttribute('aria-label', 'The Concierge is composing a remark');
+    el.setAttribute('aria-label', 'Jasmin is typing');
     el.innerHTML = '<span></span><span></span><span></span>';
     return el;
   };
@@ -427,7 +427,7 @@ import Icon from './Icon.astro';
 
   const clean = (s: string | null | undefined) => (s ?? '').replace(/\s+/g, ' ').trim().slice(0, 90);
 
-  // Describes what the visitor did, in words the Concierge can react to.
+  // Describes what the visitor did, in words Jasmin can react to.
   function describeClick(el: HTMLElement): string | null {
     const custom = el.closest<HTMLElement>('[data-concierge]')?.dataset.concierge;
     if (custom) return custom;
@@ -454,7 +454,7 @@ import Icon from './Icon.astro';
       const action = describeClick(el);
       if (!action) return;
 
-      // A link to another page unloads this one; let the Concierge comment on arrival instead.
+      // A link to another page unloads this one; let Jasmin comment on arrival instead.
       if (el instanceof HTMLAnchorElement && el.origin === location.origin && el.pathname !== location.pathname) {
         session.set(PENDING_KEY, action);
         return;
@@ -495,7 +495,7 @@ import Icon from './Icon.astro';
   const turns: ChatTurn[] = [
     {
       role: 'assistant',
-      content: 'Good evening. I see you have found us, which is already more than most people manage. How may I be of limited assistance?',
+      content: 'Oh. Hi. I’m Jasmin. You’re not a member, are you? I can always tell. What do you want?',
     },
   ];
 

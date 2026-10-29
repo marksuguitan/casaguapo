@@ -77,14 +77,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     });
 
     if (response.stop_reason === 'refusal') {
-      return json(200, { reply: 'I am afraid that is not something the House discusses.' });
+      return json(200, { reply: 'Yeah, no. I’m not doing that one, sweetie.' });
     }
     const reply = response.content
       .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === 'text')
       .map((b) => b.text)
       .join('')
       .trim();
-    return json(200, { reply: reply || 'The Concierge has nothing further to add.' });
+    return json(200, { reply: reply || 'Jasmin has nothing to say to you right now.' });
   } catch (error) {
     if (error instanceof Anthropic.RateLimitError) {
       return json(429, { error: 'busy' });
