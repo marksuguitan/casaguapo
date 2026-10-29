@@ -1,0 +1,152 @@
+---
+// Line drawings for the Merch page, drawn in code so the catalogue never depends on a photo host.
+// Every drawing shares a 200 × 200 canvas, ink strokes and amber accents.
+import type { MerchArtName } from '../data/site';
+
+interface Props {
+  name: MerchArtName;
+  class?: string;
+}
+const { name, class: className } = Astro.props;
+
+// Wide drawings are cropped to their content, so they fill landscape tiles instead of floating in them.
+const viewBoxes: Partial<Record<MerchArtName, string>> = {
+  yacht: '4 46 192 146',
+  jet: '12 52 180 130',
+  car: '4 72 192 106',
+};
+
+const art: Record<MerchArtName, string> = {
+  bag: `
+    <path d="M70 78c0-26 13-40 30-40s30 14 30 40" stroke-width="5"/>
+    <path d="M78 78c0-20 9-31 22-31s22 11 22 31" stroke-width="1.5" opacity=".5"/>
+    <path class="fill-accent" d="M46 80h108l12 82a8 8 0 0 1-8 9H42a8 8 0 0 1-8-9z"/>
+    <path class="fill-deep" d="M44 80h112l-4 30c-16 6-34 9-52 9s-36-3-52-9z"/>
+    <rect class="fill-gold" x="91" y="108" width="18" height="20" rx="3"/>
+    <path d="M95 108v-6a5 5 0 0 1 10 0v6"/>
+    <path d="M58 168v-50M142 168v-50" stroke-dasharray="3 4" opacity=".45"/>`,
+  yacht: `
+    <path d="M18 132h164l-20 26H44z" class="fill-ivory"/>
+    <path d="M44 132l12-22h88l18 22" class="fill-ivory"/>
+    <path d="M62 110l10-18h58l12 18" class="fill-ivory"/>
+    <path d="M82 92l6-12h34l6 12" class="fill-ink"/>
+    <path d="M104 80V56M104 60l14 6" />
+    <path d="M60 122h84M74 101h56" stroke-width="5" stroke-linecap="butt" class="stroke-accent"/>
+    <path d="M30 146h138" opacity=".35"/>
+    <path d="M10 170c12-6 22-6 34 0s22 6 34 0 22-6 34 0 22 6 34 0 22-6 34 0" class="stroke-accent"/>
+    <path d="M24 184c12-6 22-6 34 0s22 6 34 0 22-6 34 0 22 6 34 0" opacity=".4"/>`,
+  jet: `
+    <path class="fill-ivory" d="M22 104c0-8 10-14 24-14h96c16 0 32 6 40 14-8 8-24 12-40 12H46c-14 0-24-4-24-12z"/>
+    <path class="fill-accent" d="M70 112l40 0-30 44H64z"/>
+    <path class="fill-accent" d="M150 92l18-34h12l-8 36z"/>
+    <path class="fill-ink" d="M162 98l26-6-10 12z"/>
+    <path d="M30 101c4-4 9-6 14-6" />
+    <g class="fill-ink" stroke="none">
+      <circle cx="62" cy="100" r="3"/><circle cx="76" cy="100" r="3"/><circle cx="90" cy="100" r="3"/>
+      <circle cx="104" cy="100" r="3"/><circle cx="118" cy="100" r="3"/><circle cx="132" cy="100" r="3"/>
+    </g>
+    <path d="M140 116h16a4 4 0 0 1 0 8h-16z" class="fill-ink"/>
+    <path d="M18 160h40M120 168h62M84 176h20" opacity=".35"/>`,
+  necklace: `
+    <path d="M36 38c0 60 28 92 64 92s64-32 64-92" opacity=".35"/>
+    <g class="fill-ivory">
+      <circle cx="38" cy="54" r="6"/><circle cx="43" cy="72" r="6"/><circle cx="51" cy="89" r="6"/>
+      <circle cx="62" cy="104" r="6"/><circle cx="75" cy="116" r="6"/><circle cx="90" cy="125" r="6"/>
+      <circle cx="162" cy="54" r="6"/><circle cx="157" cy="72" r="6"/><circle cx="149" cy="89" r="6"/>
+      <circle cx="138" cy="104" r="6"/><circle cx="125" cy="116" r="6"/><circle cx="110" cy="125" r="6"/>
+    </g>
+    <path d="M100 130v8"/>
+    <path class="fill-accent" d="M82 150l8-12h20l8 12-18 26z"/>
+    <path d="M82 150h36M90 138l4 12 6 26 6-26 4-12" opacity=".6"/>`,
+  ring: `
+    <ellipse cx="100" cy="128" rx="46" ry="44" class="fill-none" stroke-width="10" />
+    <ellipse cx="100" cy="128" rx="46" ry="44" class="stroke-accent" stroke-width="4"/>
+    <path class="fill-ivory" d="M74 66l12-18h28l12 18-26 26z"/>
+    <path d="M74 66h52M86 48l6 18 8 26 8-26 6-18M92 66l8-18 8 18" opacity=".6"/>
+    <path d="M92 84l-6 6h28l-6-6" class="fill-gold"/>
+    <path d="M60 36l4 8M140 36l-4 8M100 24v10" class="stroke-accent"/>`,
+  watch: `
+    <rect class="fill-deep" x="80" y="18" width="40" height="44" rx="6"/>
+    <rect class="fill-deep" x="80" y="138" width="40" height="44" rx="6"/>
+    <circle cx="100" cy="100" r="46" class="fill-gold"/>
+    <circle cx="100" cy="100" r="37" class="fill-ivory"/>
+    <path d="M100 68v6M100 126v6M68 100h6M126 100h6" stroke-width="3"/>
+    <path d="M100 100V78M100 100l15 9" stroke-width="3"/>
+    <circle cx="100" cy="100" r="3" class="fill-ink"/>
+    <rect x="146" y="94" width="8" height="12" rx="2" class="fill-gold"/>`,
+  car: `
+    <path class="fill-accent" d="M16 132c0-10 6-16 18-18l26-4 28-24c6-5 12-6 20-6h28c10 0 18 4 24 12l14 18 14 4c6 2 10 8 10 14v10a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4z"/>
+    <path class="fill-ivory" d="M68 110l24-20c4-3 8-4 14-4h10v24zM124 86h12c7 0 12 3 16 8l11 16h-39z"/>
+    <circle cx="56" cy="146" r="18" class="fill-ink"/>
+    <circle cx="56" cy="146" r="7" class="fill-gold"/>
+    <circle cx="148" cy="146" r="18" class="fill-ink"/>
+    <circle cx="148" cy="146" r="7" class="fill-gold"/>
+    <path d="M90 124h14M172 122h8" stroke-width="3"/>
+    <path d="M10 172h180" opacity=".35"/>`,
+  champagne: `
+    <path class="fill-deep" d="M64 20h20v34c0 8 14 18 14 40v80a6 6 0 0 1-6 6H56a6 6 0 0 1-6-6V94c0-22 14-32 14-40z"/>
+    <path class="fill-gold" d="M62 20h24v24H62z"/>
+    <rect class="fill-ivory" x="56" y="110" width="36" height="36" rx="2"/>
+    <path d="M64 122h20M64 132h14" opacity=".6"/>
+    <path class="fill-accent" d="M118 96h56c0 16-12 26-28 26s-28-10-28-26z"/>
+    <path d="M146 122v46M130 172h32"/>
+    <g class="fill-ivory"><circle cx="138" cy="84" r="3"/><circle cx="150" cy="74" r="2.5"/><circle cx="158" cy="86" r="2"/></g>`,
+  island: `
+    <circle cx="146" cy="58" r="22" class="fill-gold"/>
+    <path class="fill-ivory" d="M30 150c20-22 48-30 74-30s52 8 70 30z"/>
+    <path d="M96 128c2-30 0-52-8-70" stroke-width="5"/>
+    <path class="fill-accent" d="M88 58c-14-8-34-6-46 6 16-2 30 0 46-6zM88 58c4-16 20-24 36-22-12 6-24 12-36 22zM88 58c-6 14-20 22-36 24 10-10 22-18 36-24zM88 58c16 0 30 8 38 22-14-6-26-12-38-22z"/>
+    <path d="M14 168c12-6 22-6 34 0s22 6 34 0 22-6 34 0 22 6 34 0 22-6 34 0" class="stroke-accent"/>
+    <path d="M40 182c12-6 22-6 34 0s22 6 34 0 22-6 34 0" opacity=".4"/>`,
+  chandelier: `
+    <path d="M100 10v30"/>
+    <path class="fill-gold" d="M88 40h24l-4 14H92z"/>
+    <path d="M100 54v40M40 90c0 22 26 30 60 30s60-8 60-30" />
+    <path d="M60 104c4 10 20 16 40 16s36-6 40-16" opacity=".5"/>
+    <path class="fill-ivory" d="M36 74h8v16h-8zM68 80h8v18h-8zM96 84h8v16h-8zM124 80h8v18h-8zM156 74h8v16h-8z"/>
+    <g class="fill-accent">
+      <path d="M40 66c-3-4-3-8 0-12 3 4 3 8 0 12zM72 72c-3-4-3-8 0-12 3 4 3 8 0 12zM100 76c-3-4-3-8 0-12 3 4 3 8 0 12zM128 72c-3-4-3-8 0-12 3 4 3 8 0 12zM160 66c-3-4-3-8 0-12 3 4 3 8 0 12z"/>
+    </g>
+    <g class="fill-ivory"><path d="M62 128l6 12 6-12zM94 132l6 14 6-14zM126 128l6 12 6-12z"/></g>
+    <path d="M68 120v8M100 120v12M132 120v8"/>`,
+};
+---
+
+<svg
+  class:list={['merch-art', className]}
+  viewBox={viewBoxes[name] ?? '0 0 200 200'}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={art[name]}
+/>
+
+<style>
+  .merch-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: var(--stone-900);
+  }
+  .merch-art :global(.fill-accent) {
+    fill: var(--amber-500);
+  }
+  .merch-art :global(.fill-gold) {
+    fill: var(--amber-300);
+  }
+  .merch-art :global(.fill-deep) {
+    fill: var(--amber-800);
+  }
+  .merch-art :global(.fill-ivory) {
+    fill: var(--stone-25);
+  }
+  .merch-art :global(.fill-ink) {
+    fill: var(--stone-900);
+  }
+  .merch-art :global(.stroke-accent) {
+    stroke: var(--amber-500);
+  }
+</style>

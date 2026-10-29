@@ -6,11 +6,13 @@ const { overlay = false } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const links = [
-  { href: '/services/', label: 'Services' },
+  { href: '/services/#technology', label: 'Technology' },
+  { href: '/services/#lifestyle', label: 'Lifestyle' },
+  { href: '/merch/', label: 'Merch' },
   { href: '/membership/', label: 'Membership' },
-  { href: '/#house', label: 'The House' },
 ];
-const isActive = (href: string) => href !== '/#house' && path.startsWith(href.replace(/\/$/, ''));
+// The two services links point into the same page, so only whole-page links get the active state.
+const isActive = (href: string) => !href.includes('#') && path.startsWith(href.replace(/\/$/, ''));
 ---
 
 <header class:list={['site-header', { 'is-overlay': overlay }]} data-header>

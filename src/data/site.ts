@@ -30,6 +30,19 @@ export type IconName =
   | 'friends'
   | 'concierge';
 
+// Drawings available to MerchArt.astro.
+export type MerchArtName =
+  | 'bag'
+  | 'yacht'
+  | 'jet'
+  | 'necklace'
+  | 'ring'
+  | 'watch'
+  | 'car'
+  | 'champagne'
+  | 'island'
+  | 'chandelier';
+
 export interface Service {
   slug: string;
   icon: IconName;
