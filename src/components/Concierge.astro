@@ -592,9 +592,11 @@ import Icon from './Icon.astro';
   window.visualViewport?.addEventListener('resize', fitPanel);
   window.visualViewport?.addEventListener('scroll', fitPanel);
 
-  function openPanel() {
+  // `auto` is Jasmin opening the chat herself: no focus, so phones don't throw up the keyboard.
+  function openPanel(auto = false) {
     remarkBox.hidden = true;
     panel.hidden = false;
+    session.set(AUTO_OPEN_KEY, '1');
     document.documentElement.classList.toggle('concierge-open', phone.matches);
     fitPanel();
     launcher.setAttribute('aria-expanded', 'true');
@@ -602,7 +604,26 @@ import Icon from './Icon.astro';
       if (local.get(LEFT_KEY)) leaveChat();
       else addMessage('assistant', turns[0].content);
     }
-    if (!input.disabled) input.focus();
+    if (!input.disabled && !auto) input.focus();
+  }
+
+  // Jasmin starts a chat 2 seconds after the visitor first scrolls, once per visit.
+  const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
+  if (!session.get(AUTO_OPEN_KEY) && !local.get(LEFT_KEY)) {
+    window.addEventListener(
+      'scroll',
+      () => {
+        window.setTimeout(() => {
+          if (!panel.hidden || session.get(AUTO_OPEN_KEY)) return;
+          session.set(AUTO_OPEN_KEY, '1');
+          if (!log.childElementCount) {
+            turns[0].content = 'Oh, you’re scrolling. Sweetie, the prices don’t get lower further down. I checked. What do you want?';
+          }
+          openPanel(true);
+        }, 2000);
+      },
+      { once: true, passive: true },
+    );
   }
   function closePanel() {
     panel.hidden = true;
@@ -643,7 +664,7 @@ import Icon from './Icon.astro';
 
     const pendingMsg = addMessage('assistant', '');
     pendingMsg.append(typingDots());
-    const { reply, ended } = await chat(turns, sent);
+    const { reply, ended } = await chat(turns.slice(-12), sent);
     pendingMsg.textContent = reply;
     turns.push({ role: 'assistant', content: reply });
     log.scrollTop = log.scrollHeight;

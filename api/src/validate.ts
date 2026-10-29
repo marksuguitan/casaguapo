@@ -3,7 +3,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 export const MAX_TURNS = 12;
 export const MAX_CHARS = 600;
 /** Jasmin answers this many chat messages per visitor, then leaves the chat. */
-export const MAX_CHAT_REPLIES = 5;
+export const MAX_CHAT_REPLIES = 20;
 
 export type ConciergeRequest =
   | { mode: 'chat'; messages: Anthropic.MessageParam[]; turn: number }
