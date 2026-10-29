@@ -8,6 +8,13 @@ Parameters:
     Type: String
     Default: marksuguitan/casaguapo
     Description: owner/name of the repository allowed to assume the role.
+  GitHubRepoImmutable:
+    Type: String
+    Default: marksuguitan@43083812/casaguapo@1438445470
+    Description: >-
+      The same repository in GitHub's immutable-subject form (owner@id/name@id), which GitHub
+      puts in the token when the repo uses immutable OIDC subjects. Shown by
+      gh api repos/OWNER/REPO/actions/oidc/customization/sub as sub_claim_prefix (without "repo:").
   Branch:
     Type: String
     Default: main
@@ -51,13 +58,18 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-              # Only workflow runs on this repository's deploy branches.
+              # Only workflow runs on this repository's deploy branches, in either subject format.
               ForAnyValue:StringEquals:
                 token.actions.githubusercontent.com:sub:
                   - !Sub 'repo:${GitHubRepo}:ref:refs/heads/${Branch}'
+                  - !Sub 'repo:${GitHubRepoImmutable}:ref:refs/heads/${Branch}'
                   - !If
                     - HasExtraBranch
                     - !Sub 'repo:${GitHubRepo}:ref:refs/heads/${ExtraBranch}'
+                    - !Ref AWS::NoValue
+                  - !If
+                    - HasExtraBranch
+                    - !Sub 'repo:${GitHubRepoImmutable}:ref:refs/heads/${ExtraBranch}'
                     - !Ref AWS::NoValue
       # SAM creates IAM roles, Lambda, API Gateway, CloudFront, S3, ACM and Route 53 resources, so the
       # role needs broad rights. The trust policy above is what keeps it to this repo's main branch.
