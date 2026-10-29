@@ -258,8 +258,8 @@ export const tiers: Tier[] = [
   },
   {
     id: 'basic',
-    name: 'Basic',
-    price: 15000,
+    name: 'Basic ±',
+    price: 25000,
     positioning: 'For the conventionally extraordinary.',
     description:
       'For individuals of considerable beauty, wealth and self-awareness. A respectable beginning, though we trust your ambitions extend further, and your inheritance arrives soon.',

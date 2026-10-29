@@ -405,7 +405,7 @@ import Icon from './Icon.astro';
 </style>
 
 <script>
-  import { chat, remark, MAX_CHAT_REPLIES, type ChatTurn } from '../scripts/concierge';
+  import { chat, remark, nag as nagLine, MAX_CHAT_REPLIES, type ChatTurn } from '../scripts/concierge';
 
   const COOLDOWN_MS = 4000;
   const MAX_REMARKS = 60;
@@ -646,8 +646,8 @@ import Icon from './Icon.astro';
   }
 
   // Jasmin starts talking 2 seconds after the visitor first scrolls (once per visit) and adds another line every
-  // 10 seconds until the visitor clicks her. The first line is written by Claude; the rest are pre-written,
-  // so the nagging costs one API call, and she gives up after MAX_NAGS lines.
+  // 10 seconds until the visitor clicks her, up to MAX_NAGS lines. Claude writes every line, seeing her earlier
+  // ones so she doesn't repeat herself; NAGS is the fallback when the API is unavailable.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
   const MAX_NAGS = 50;
   const NAGS = [
@@ -716,7 +716,11 @@ import Icon from './Icon.astro';
       remarkBox.hidden = false;
     }
     const text = nags.length
-      ? NAGS[(nags.length - 1) % NAGS.length]
+      ? await nagLine(
+          `has ignored you for ${nags.length * 10} seconds; this is your unanswered message number ${nags.length + 1}. Say something new to get them to click you`,
+          nags,
+          NAGS[(nags.length - 1) % NAGS.length],
+        )
       : await remark('just started scrolling the website and has not said or clicked anything yet', []);
     if (!nagging || !panel.hidden) return;
     nags.push(text);

@@ -83,6 +83,12 @@ export async function remark(action: string, previous: string[]): Promise<string
   return reply ?? fallbackRemark(action);
 }
 
+/** One of Jasmin's unprompted lines while the visitor ignores her. `fallback` is used if the API is unavailable. */
+export async function nag(action: string, previous: string[], fallback: string): Promise<string> {
+  const reply = await call({ mode: 'remark', action, page: location.pathname, previous });
+  return reply ?? fallback;
+}
+
 /** `turn` is how many messages the visitor has sent, including this one. */
 export async function chat(messages: ChatTurn[], turn: number): Promise<Reply> {
   const res = await request({ mode: 'chat', messages, turn });

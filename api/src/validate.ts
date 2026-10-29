@@ -81,7 +81,7 @@ export function parseRequest(raw: unknown): ConciergeRequest | null {
     const previous = Array.isArray(body.previous)
       ? body.previous
           .filter((p): p is string => typeof p === 'string')
-          .slice(-5)
+          .slice(-12)
           .map((p) => p.slice(0, 300))
       : [];
     return { mode: 'remark', action, page, previous };
