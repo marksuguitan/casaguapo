@@ -645,7 +645,7 @@ import Icon from './Icon.astro';
     if (!input.disabled && !auto) input.focus();
   }
 
-  // Jasmin starts talking 2.5 seconds after the page loads (once per visit) and adds another line every
+  // Jasmin starts talking 1 second after the visitor first scrolls (once per visit) and adds another line every
   // 2 seconds until the visitor clicks her. The first line is written by Claude; the rest are pre-written,
   // so the nagging costs one API call, and she gives up after MAX_NAGS lines.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
@@ -675,7 +675,7 @@ import Icon from './Icon.astro';
     }
     const text = nags.length
       ? NAGS[(nags.length - 1) % NAGS.length]
-      : await remark('just arrived on the website and has not said or clicked anything yet', []);
+      : await remark('just started scrolling the website and has not said or clicked anything yet', []);
     if (!nagging || !panel.hidden) return;
     nags.push(text);
     if (nags.length === 1) remarkText.replaceChildren();
@@ -699,9 +699,16 @@ import Icon from './Icon.astro';
   }
 
   if (!session.get(AUTO_OPEN_KEY) && !local.get(LEFT_KEY)) {
-    session.set(AUTO_OPEN_KEY, '1');
-    nagging = true;
-    nagTimer = window.setTimeout(nag, 2500);
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (session.get(AUTO_OPEN_KEY) || !panel.hidden) return;
+        session.set(AUTO_OPEN_KEY, '1');
+        nagging = true;
+        nagTimer = window.setTimeout(nag, 1000);
+      },
+      { once: true, passive: true },
+    );
   }
 
   function closePanel() {
