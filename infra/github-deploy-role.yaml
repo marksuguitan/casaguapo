@@ -11,6 +11,10 @@ Parameters:
   Branch:
     Type: String
     Default: main
+  ExtraBranch:
+    Type: String
+    Default: claude/project-thread-ddbq8e
+    Description: A second branch allowed to deploy, or empty for main only.
   CreateOidcProvider:
     Type: String
     AllowedValues: ['true', 'false']
@@ -19,6 +23,7 @@ Parameters:
 
 Conditions:
   CreateProvider: !Equals [!Ref CreateOidcProvider, 'true']
+  HasExtraBranch: !Not [!Equals [!Ref ExtraBranch, '']]
 
 Resources:
   GitHubOidcProvider:
@@ -46,8 +51,14 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                # Only workflow runs on this repository's main branch.
-                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubRepo}:ref:refs/heads/${Branch}'
+              # Only workflow runs on this repository's deploy branches.
+              ForAnyValue:StringEquals:
+                token.actions.githubusercontent.com:sub:
+                  - !Sub 'repo:${GitHubRepo}:ref:refs/heads/${Branch}'
+                  - !If
+                    - HasExtraBranch
+                    - !Sub 'repo:${GitHubRepo}:ref:refs/heads/${ExtraBranch}'
+                    - !Ref AWS::NoValue
       # SAM creates IAM roles, Lambda, API Gateway, CloudFront, S3, ACM and Route 53 resources, so the
       # role needs broad rights. The trust policy above is what keeps it to this repo's main branch.
       ManagedPolicyArns:

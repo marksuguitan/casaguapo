@@ -2,7 +2,8 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    # Claude's working branch deploys too, so changes go live without a merge.
+    branches: [main, claude/project-thread-ddbq8e]
   workflow_dispatch:
 
 # One deploy at a time; a newer push waits for the running one rather than cancelling it mid-stack-update.
