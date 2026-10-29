@@ -98,7 +98,7 @@ The stack then issues the certificate and creates the alias records itself. Depl
 
 ## Automatic deploys
 
-`.github/workflows/deploy.yml` runs the API tests and `infra/deploy.sh` on every push to `main` (including merged pull requests), and can be run by hand from the Actions tab. It signs in to AWS through GitHub's OIDC, so no AWS keys are stored in GitHub.
+`.github/workflows/deploy.yml` runs the API tests and `infra/deploy.sh` on every push to `main` (including merged pull requests) and to Claude's working branch `claude/project-thread-ddbq8e`, and can be run by hand from the Actions tab. It signs in to AWS through GitHub's OIDC, so no AWS keys are stored in GitHub.
 
 One-time setup:
 

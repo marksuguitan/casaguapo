@@ -1,6 +1,7 @@
 /*
  * Casaguapo design tokens.
- * One accent (Amber, built around #E69B00), warm neutrals, Manrope for display and Inter for text.
+ * One accent (Amber, built around #E69B00), warm neutrals, Manrope for display, Inter for text
+ * and Bodoni Moda for the wordmark only.
  * Components read the semantic tokens (surface, text, border, accent-*) rather than raw scale values.
  * The /system/ page renders every token below.
  */
@@ -67,6 +68,7 @@
 
   /* ---------- Typography ---------- */
   --font-display: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-logo: 'Bodoni Moda', 'Didot', 'Bodoni 72', Georgia, serif; /* the wordmark only */
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --text-2xs: 10.5px;
