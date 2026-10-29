@@ -701,6 +701,29 @@ import Icon from './Icon.astro';
     'Okay, I’m going back to my yacht people. Click me if you dare.',
     'Last one, darling. After this I bill.',
   ];
+  // Each nag gets a random topic and form so her lines don't fall into one escalating pattern.
+  const NAG_ANGLES = [
+    'their outfit', 'their phone or laptop', 'their browser', 'their bank', 'their last holiday', 'their car',
+    'their apartment', 'their haircut', 'their coffee order', 'their wifi', 'their posture', 'their email address',
+    'their shoes', 'their friends', 'their job', 'their groceries', 'their airline', 'their skincare',
+    'a member she is texting instead', 'her own yacht', 'the help', 'Monaco', 'a famous member’s gossip',
+    'their handwriting', 'their pets', 'their dating life', 'their furniture', 'their birthday party',
+  ];
+  const NAG_FORMS = [
+    'a one-line insult', 'a rhetorical question', 'a fake staff announcement', 'a backhanded compliment',
+    'a confession about herself', 'a short piece of gossip', 'a tiny poem', 'a sigh and a complaint',
+    'unsolicited advice', 'a mock pep talk', 'a dramatic farewell she does not mean',
+  ];
+  const usedAngles: string[] = [];
+  const usedForms: string[] = [];
+  // A random item not used in the last few picks.
+  function pickFresh(list: string[], used: string[]) {
+    const options = list.filter((x) => !used.includes(x));
+    const choice = options[Math.floor(Math.random() * options.length)];
+    used.push(choice);
+    if (used.length > Math.floor(list.length / 2)) used.shift();
+    return choice;
+  }
   const nags: string[] = [];
   let nagTimer: number | undefined;
 
@@ -717,7 +740,7 @@ import Icon from './Icon.astro';
     }
     const text = nags.length
       ? await nagLine(
-          `has ignored you for ${nags.length * 10} seconds; this is your unanswered message number ${nags.length + 1}. Say something new to get them to click you`,
+          `is ignoring you. Topic: ${pickFresh(NAG_ANGLES, usedAngles)}. Form: ${pickFresh(NAG_FORMS, usedForms)}. Don't mention time, counting or being ignored`,
           nags,
           NAGS[(nags.length - 1) % NAGS.length],
         )
