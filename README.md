@@ -43,7 +43,7 @@ npm run typecheck
 
 The voice and its boundaries live in `api/src/prompts.ts`. It mocks the visitor's presumed lack of wealth only, never their appearance or identity, and drops the act if someone describes real hardship.
 
-Once per visit, Jasmin starts talking 2.5 seconds after the page loads and adds a line every 2 seconds (up to 8; only the first is written by Claude) until the visitor clicks her. She answers 50 chat messages per visitor. Clicking one of her remarks opens the chat with that remark as her opening line. The 50th reply is a rude goodbye, after which the chat shows “Jasmin left the chat” and stays closed for 24 hours (remembered in the browser's localStorage). The Lambda enforces the same limit and stops calling Claude for any later message (`MAX_CHAT_REPLIES` in `api/src/validate.ts`).
+Once per visit, Jasmin starts talking 1 second after the visitor first scrolls and adds a line every 2 seconds (up to 8; only the first is written by Claude) until the visitor clicks her. She answers 50 chat messages per visitor. Clicking one of her remarks opens the chat with that remark as her opening line. The 50th reply is a rude goodbye, after which the chat shows “Jasmin left the chat” and stays closed for 24 hours (remembered in the browser's localStorage). The Lambda enforces the same limit and stops calling Claude for any later message (`MAX_CHAT_REPLIES` in `api/src/validate.ts`).
 
 Spend guardrails: the browser waits 4 seconds between remarks and stops asking for remarks after 60 per session; the Lambda caps message length and history; API Gateway throttles to 5 requests a second (burst 10) across all visitors; replies use low effort and short outputs. Adjust `ApiRateLimit` and `ApiBurstLimit` in `infra/template.yaml` if needed.
 
