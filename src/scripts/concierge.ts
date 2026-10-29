@@ -5,7 +5,12 @@ const ENDPOINT = import.meta.env.PUBLIC_CONCIERGE_URL ?? '/api/concierge';
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
-async function call(body: Record<string, unknown>): Promise<string | null> {
+/** Matches MAX_CHAT_REPLIES in api/src/validate.ts. */
+export const MAX_CHAT_REPLIES = 5;
+
+type Reply = { reply: string; ended: boolean };
+
+async function request(body: Record<string, unknown>): Promise<Reply | null> {
   try {
     const res = await fetch(ENDPOINT, {
       method: 'POST',
@@ -13,11 +18,15 @@ async function call(body: Record<string, unknown>): Promise<string | null> {
       body: JSON.stringify(body),
     });
     if (!res.ok) return null;
-    const data = (await res.json()) as { reply?: unknown };
-    return typeof data.reply === 'string' && data.reply ? data.reply : null;
+    const data = (await res.json()) as { reply?: unknown; ended?: unknown };
+    return typeof data.reply === 'string' && data.reply ? { reply: data.reply, ended: data.ended === true } : null;
   } catch {
     return null;
   }
+}
+
+async function call(body: Record<string, unknown>): Promise<string | null> {
+  return (await request(body))?.reply ?? null;
 }
 
 const pick = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
@@ -57,6 +66,12 @@ const CHAT_REPLIES = [
   'Did you try asking someone in your price range?',
 ];
 
+const FAREWELLS = [
+  'Okay, I’ve done the maths, and you’re officially too poor for me to keep talking to. My time costs more than your car. Bye. 💅',
+  'Sweetie, I’ve given you five whole replies, which is more than your bank gives you. I’m leaving now. Don’t follow me.',
+  'That’s enough charity for one day. Jasmin is going to go talk to someone with a boat.',
+];
+
 function fallbackRemark(action: string): string {
   if (/\$|price|tier|membership|basic|ultra|invitation/i.test(action)) return pick(PRICING_REMARKS);
   if (/typed|field|selected|chose|form|answer|ticked/i.test(action)) return pick(FORM_REMARKS);
@@ -68,8 +83,12 @@ export async function remark(action: string, previous: string[]): Promise<string
   return reply ?? fallbackRemark(action);
 }
 
-export async function chat(messages: ChatTurn[]): Promise<string> {
-  return (await call({ mode: 'chat', messages })) ?? pick(CHAT_REPLIES);
+/** `turn` is how many messages the visitor has sent, including this one. */
+export async function chat(messages: ChatTurn[], turn: number): Promise<Reply> {
+  const res = await request({ mode: 'chat', messages, turn });
+  if (res) return res;
+  if (turn >= MAX_CHAT_REPLIES) return { reply: pick(FAREWELLS), ended: true };
+  return { reply: pick(CHAT_REPLIES), ended: false };
 }
 
 export async function verdict(application: Record<string, string | string[]>): Promise<string> {

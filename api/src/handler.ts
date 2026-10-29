@@ -1,8 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { CONCIERGE_SYSTEM, REMARK_SYSTEM, VERDICT_SYSTEM } from './prompts';
-import { parseRequest } from './validate';
+import { CONCIERGE_SYSTEM, FAREWELL_INSTRUCTION, GOODBYE_REPLY, REMARK_SYSTEM, VERDICT_SYSTEM } from './prompts';
+import { MAX_CHAT_REPLIES, parseRequest } from './validate';
 
 const MODEL = process.env.CLAUDE_MODEL ?? 'claude-sonnet-5-5';
 
@@ -44,6 +44,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   const req = parseRequest(raw);
   if (!req) return json(400, { error: 'invalid_request' });
 
+  // Jasmin answers MAX_CHAT_REPLIES messages, the last one with a rude goodbye, then stops calling Claude.
+  if (req.mode === 'chat' && req.turn > MAX_CHAT_REPLIES) return json(200, { reply: GOODBYE_REPLY, ended: true });
+  const farewell = req.mode === 'chat' && req.turn === MAX_CHAT_REPLIES;
+
   let system: string;
   let messages: Anthropic.Beta.BetaMessageParam[];
   if (req.mode === 'chat') {
@@ -72,19 +76,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
           text: system,
           cache_control: { type: 'ephemeral' },
         },
+        ...(farewell ? [{ type: 'text' as const, text: FAREWELL_INSTRUCTION }] : []),
       ],
       messages,
     });
 
     if (response.stop_reason === 'refusal') {
-      return json(200, { reply: 'Yeah, no. I’m not doing that one, sweetie.' });
+      return json(200, { reply: 'Yeah, no. I’m not doing that one, sweetie.', ...(farewell && { ended: true }) });
     }
     const reply = response.content
       .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === 'text')
       .map((b) => b.text)
       .join('')
       .trim();
-    return json(200, { reply: reply || 'Jasmin has nothing to say to you right now.' });
+    return json(200, { reply: reply || 'Jasmin has nothing to say to you right now.', ...(farewell && { ended: true }) });
   } catch (error) {
     if (error instanceof Anthropic.RateLimitError) {
       return json(429, { error: 'busy' });

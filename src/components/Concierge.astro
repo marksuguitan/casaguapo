@@ -296,6 +296,24 @@ import Icon from './Icon.astro';
     }
   }
 
+  .concierge__log :global(.concierge__left) {
+    align-self: center;
+    margin: 6px 0 0;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface-sunken);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    animation: concierge-in 0.5s var(--ease);
+  }
+  .concierge__form input:disabled,
+  .concierge__send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .concierge__form {
     display: flex;
     gap: 10px;
@@ -344,13 +362,15 @@ import Icon from './Icon.astro';
 </style>
 
 <script>
-  import { chat, remark, type ChatTurn } from '../scripts/concierge';
+  import { chat, remark, MAX_CHAT_REPLIES, type ChatTurn } from '../scripts/concierge';
 
   const COOLDOWN_MS = 4000;
   const MAX_REMARKS = 60;
   const PENDING_KEY = 'cg-pending-action';
   const COUNT_KEY = 'cg-remark-count';
   const HISTORY_KEY = 'cg-remarks';
+  const SENT_KEY = 'cg-chat-sent';
+  const LEFT_KEY = 'cg-jasmin-left';
 
   const root = document.querySelector<HTMLElement>('[data-concierge-root]')!;
   const remarkBox = root.querySelector<HTMLElement>('[data-remark]')!;
@@ -380,6 +400,22 @@ import Icon from './Icon.astro';
         sessionStorage.removeItem(key);
       } catch {}
       return v;
+    },
+  };
+
+  // Survives closing the tab, so the chat limit is per visitor rather than per page.
+  const local = {
+    get(key: string) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    },
+    set(key: string, value: string) {
+      try {
+        localStorage.setItem(key, value);
+      } catch {}
     },
   };
 
@@ -512,8 +548,11 @@ import Icon from './Icon.astro';
     remarkBox.hidden = true;
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
-    if (!log.childElementCount) addMessage('assistant', turns[0].content);
-    input.focus();
+    if (!log.childElementCount) {
+      if (local.get(LEFT_KEY)) leaveChat();
+      else addMessage('assistant', turns[0].content);
+    }
+    if (!input.disabled) input.focus();
   }
   function closePanel() {
     panel.hidden = true;
@@ -526,11 +565,26 @@ import Icon from './Icon.astro';
     if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
+  function leaveChat() {
+    local.set(LEFT_KEY, '1');
+    const notice = document.createElement('p');
+    notice.className = 'concierge__left';
+    notice.textContent = 'Jasmin left the chat';
+    log.append(notice);
+    log.scrollTop = log.scrollHeight;
+    input.value = '';
+    input.disabled = true;
+    input.placeholder = 'Jasmin has left the chat';
+    form.querySelector('button')!.disabled = true;
+  }
+
   let chatting = false;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = input.value.trim();
-    if (!text || chatting) return;
+    if (!text || chatting || input.disabled) return;
+    const sent = Number(local.get(SENT_KEY) ?? 0) + 1;
+    local.set(SENT_KEY, String(sent));
     chatting = true;
     input.value = '';
     addMessage('user', text);
@@ -538,10 +592,11 @@ import Icon from './Icon.astro';
 
     const pendingMsg = addMessage('assistant', '');
     pendingMsg.append(typingDots());
-    const reply = await chat(turns);
+    const { reply, ended } = await chat(turns, sent);
     pendingMsg.textContent = reply;
     turns.push({ role: 'assistant', content: reply });
     log.scrollTop = log.scrollHeight;
     chatting = false;
+    if (ended || sent >= MAX_CHAT_REPLIES) window.setTimeout(leaveChat, 1200);
   });
 </script>

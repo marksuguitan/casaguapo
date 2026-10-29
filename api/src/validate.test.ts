@@ -10,7 +10,7 @@ test('accepts a chat that starts with the Concierge greeting', () => {
       { role: 'user', content: 'Hello' },
     ],
   });
-  assert.deepEqual(req, { mode: 'chat', messages: [{ role: 'user', content: 'Hello' }] });
+  assert.deepEqual(req, { mode: 'chat', messages: [{ role: 'user', content: 'Hello' }], turn: 1 });
 });
 
 test('rejects chats that do not end on a user turn or that repeat roles', () => {
@@ -64,4 +64,18 @@ test('accepts a remark about a UI action and trims its inputs', () => {
   assert.equal(req.action.length, 200);
   assert.deepEqual(req.previous, ['Earlier.']);
   assert.equal(parseRequest({ mode: 'remark', action: '  ' }), null);
+});
+
+test('counts the visitor’s messages, trusting the higher of history and the reported count', () => {
+  const messages = [
+    { role: 'user', content: 'a' },
+    { role: 'assistant', content: 'b' },
+    { role: 'user', content: 'c' },
+  ];
+  const fromHistory = parseRequest({ mode: 'chat', messages });
+  assert.ok(fromHistory && fromHistory.mode === 'chat' && fromHistory.turn === 2);
+  const reported = parseRequest({ mode: 'chat', messages, turn: 6 });
+  assert.ok(reported && reported.mode === 'chat' && reported.turn === 6);
+  const understated = parseRequest({ mode: 'chat', messages, turn: 0 });
+  assert.ok(understated && understated.mode === 'chat' && understated.turn === 2);
 });

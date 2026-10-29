@@ -2,9 +2,11 @@ import type Anthropic from '@anthropic-ai/sdk';
 
 export const MAX_TURNS = 12;
 export const MAX_CHARS = 600;
+/** Jasmin answers this many chat messages per visitor, then leaves the chat. */
+export const MAX_CHAT_REPLIES = 5;
 
 export type ConciergeRequest =
-  | { mode: 'chat'; messages: Anthropic.MessageParam[] }
+  | { mode: 'chat'; messages: Anthropic.MessageParam[]; turn: number }
   | { mode: 'verdict'; application: string }
   | { mode: 'remark'; action: string; page: string; previous: string[] };
 
@@ -28,6 +30,10 @@ export function parseRequest(raw: unknown): ConciergeRequest | null {
 
   if (body.mode === 'chat') {
     if (!Array.isArray(body.messages) || body.messages.length === 0) return null;
+    // The browser also reports how many messages the visitor has sent across page loads.
+    const sent = body.messages.filter((m) => (m as { role?: unknown } | null)?.role === 'user').length;
+    const reported = typeof body.turn === 'number' && Number.isFinite(body.turn) ? Math.floor(body.turn) : 0;
+    const turn = Math.max(sent, reported);
     const recent = body.messages.slice(-MAX_TURNS);
     const messages: Anthropic.MessageParam[] = [];
     for (const m of recent) {
@@ -44,7 +50,7 @@ export function parseRequest(raw: unknown): ConciergeRequest | null {
     for (let i = 1; i < messages.length; i++) {
       if (messages[i].role === messages[i - 1].role) return null;
     }
-    return { mode: 'chat', messages };
+    return { mode: 'chat', messages, turn };
   }
 
   if (body.mode === 'verdict') {
