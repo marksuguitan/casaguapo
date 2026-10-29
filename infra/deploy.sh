@@ -6,9 +6,13 @@ set -euo pipefail
 
 STACK="${STACK_NAME:-casaguapo}"
 REGION="${AWS_REGION:-us-east-1}"
-# Optional custom domain: DOMAIN_NAME=www.example.com CERT_ARN=arn:aws:acm:us-east-1:... ./infra/deploy.sh
+# Optional custom domain, either
+#   DOMAIN_NAME=example.com HOSTED_ZONE_ID=Z123... ./infra/deploy.sh   (Route 53: bare domain and www, cert and DNS handled)
+#   DOMAIN_NAME=www.example.com CERT_ARN=arn:aws:acm:us-east-1:... ./infra/deploy.sh   (DNS elsewhere, one host)
 OVERRIDES=()
-if [[ -n "${DOMAIN_NAME:-}" && -n "${CERT_ARN:-}" ]]; then
+if [[ -n "${DOMAIN_NAME:-}" && -n "${HOSTED_ZONE_ID:-}" ]]; then
+  OVERRIDES=(--parameter-overrides "DomainName=$DOMAIN_NAME" "HostedZoneId=$HOSTED_ZONE_ID")
+elif [[ -n "${DOMAIN_NAME:-}" && -n "${CERT_ARN:-}" ]]; then
   OVERRIDES=(--parameter-overrides "DomainName=$DOMAIN_NAME" "CertificateArn=$CERT_ARN")
 fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -49,6 +53,6 @@ echo "→ Invalidating CloudFront"
 aws cloudfront create-invalidation --distribution-id "$DIST" --paths "/*" >/dev/null
 
 echo "✓ Live at $(output SiteUrl)"
-if [[ -n "${DOMAIN_NAME:-}" ]]; then
+if [[ -n "${DOMAIN_NAME:-}" && -z "${HOSTED_ZONE_ID:-}" ]]; then
   echo "  DNS: point a CNAME for $DOMAIN_NAME to $(output CloudFrontDomain)"
 fi

@@ -86,6 +86,16 @@ Prerequisites: AWS CLI v2, [SAM CLI](https://docs.aws.amazon.com/serverless-appl
 
 3. Point a CNAME for `www` at the `CloudFrontDomain` the script prints. Providers such as GoDaddy can't put a CNAME on the bare domain, so forward `example.com` to `https://www.example.com` instead.
 
+### Bare domain with Route 53
+
+To serve both `example.com` and `www.example.com`, host the domain's DNS in Route 53. Create a hosted zone, copy over any existing records (mail especially), point the registrar's nameservers at it, then deploy with:
+
+```sh
+DOMAIN_NAME=example.com HOSTED_ZONE_ID=Z0123456789 ./infra/deploy.sh
+```
+
+The stack then issues the certificate and creates the alias records itself. Deploy in `us-east-1`.
+
 ## Images
 
 Editorial photography is loaded from Unsplash. Each image sits on a toned backdrop, so a photo that fails to load leaves a tasteful gradient rather than a broken image. To self-host, put files in `public/images/` and update `src/data/site.ts`.
