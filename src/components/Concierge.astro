@@ -632,6 +632,24 @@ import Icon from './Icon.astro';
     if (!input.disabled && !auto) input.focus();
   }
 
+  // If the visitor leaves her opener unanswered for 2 seconds, Jasmin follows up once.
+  let engaged = false;
+  panel.addEventListener('pointerdown', () => (engaged = true));
+  input.addEventListener('focus', () => (engaged = true));
+  async function nudge() {
+    if (engaged || panel.hidden || chatting || input.disabled || turns.length !== 1) return;
+    const pendingMsg = addMessage('assistant', '');
+    pendingMsg.append(typingDots());
+    const text = await remark('opened Jasmin’s chat and then ignored her for two seconds without replying', [turns[0].content]);
+    if (turns.length !== 1) {
+      pendingMsg.remove();
+      return;
+    }
+    pendingMsg.textContent = text;
+    turns[0].content += `\n\n${text}`;
+    log.scrollTop = log.scrollHeight;
+  }
+
   // Jasmin starts a chat 2 seconds after the visitor first scrolls, once per visit.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
   if (!session.get(AUTO_OPEN_KEY) && !local.get(LEFT_KEY)) {
@@ -642,6 +660,7 @@ import Icon from './Icon.astro';
           if (!panel.hidden || session.get(AUTO_OPEN_KEY)) return;
           session.set(AUTO_OPEN_KEY, '1');
           openPanel(true, 'Oh, you’re scrolling. Sweetie, the prices don’t get lower further down. I checked. What do you want?');
+          window.setTimeout(nudge, 2000);
         }, 2000);
       },
       { once: true, passive: true },
