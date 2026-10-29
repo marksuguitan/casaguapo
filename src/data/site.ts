@@ -87,7 +87,7 @@ export const technologyServices: Service[] = [
     kicker: 'Infrastructure',
     summary: 'Distinguished infrastructure for equally distinguished data.',
     description:
-      'Premium, secure database infrastructure for exceptionally distinguished clients and their equally distinguished data. Your records will never share a rack with anyone you would not seat at dinner, which, in our experience, is everyone.',
+      'Premium, secure database infrastructure for exceptionally distinguished clients and their equally distinguished data. Your records will never share server space with anyone you would not seat at dinner, which, in our experience, is everyone.',
     includes: [
       'Dedicated hardware that has never stored an ordinary person’s data, and was cleaned after the delivery driver touched it',
       'Rows indexed by importance. Your ex-husband is a soft delete.',
@@ -113,7 +113,7 @@ export const technologyServices: Service[] = [
     includes: [
       'Dedicated servers in each of your residences, plus one on the yacht for when you are feeling nautical',
       'Hardware hand-assembled in Switzerland and burned in for a full week, the way you would want a butler trained',
-      'Racks that are never shared, never rebooted in your presence and never, ever on sale',
+      'Servers that are never shared, never rebooted in your presence and never, ever on sale',
       'A dedicated engineer on call at all hours, who answers on the first ring and calls you “sir” even when you are not one',
     ],
     note: 'Our members do not rent servers, much as they do not rent cutlery.',
