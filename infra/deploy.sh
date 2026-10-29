@@ -20,6 +20,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 echo "→ Installing dependencies"
 npm ci --prefix "$ROOT"
 npm ci --prefix "$ROOT/api"
+# sam build bundles the Lambda with esbuild and looks for it on PATH; use the api's own copy.
+export PATH="$ROOT/api/node_modules/.bin:$PATH"
 
 echo "→ Building and deploying the stack ($STACK, $REGION)"
 sam build --template-file "$ROOT/infra/template.yaml" --build-dir "$ROOT/.aws-sam/build"
