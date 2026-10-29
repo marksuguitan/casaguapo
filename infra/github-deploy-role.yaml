@@ -13,8 +13,8 @@ Parameters:
     Default: main
   ExtraBranch:
     Type: String
-    Default: claude/project-thread-ddbq8e
-    Description: A second branch allowed to deploy, or empty for main only.
+    Default: ''
+    Description: An optional second branch allowed to deploy. Leave empty for main only.
   CreateOidcProvider:
     Type: String
     AllowedValues: ['true', 'false']
