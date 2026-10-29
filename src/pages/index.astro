@@ -122,8 +122,7 @@ const overheard = [
   <section class="section intro" id="house">
     <div class="container intro__grid">
       <div class="intro__copy">
-        <p class="eyebrow" data-reveal>The House</p>
-        <h2 class="h2" data-reveal style="--d:.08s">
+        <h2 class="h2" data-reveal>
           Because ordinary infrastructure is for <em>ordinary people.</em>
         </h2>
         <div class="intro__text" data-reveal style="--d:.16s">
@@ -138,22 +137,142 @@ const overheard = [
         </div>
         <a href="/services/" class="link-arrow" data-reveal style="--d:.24s">Discover the services <Icon name="arrow" /></a>
       </div>
-      <figure class="portrait" data-reveal style="--d:.12s">
-        <div class="portrait__frame">
-          <div class="portrait__canvas">
-            <svg class="portrait__sitter" viewBox="0 0 300 380" aria-hidden="true">
-              <!-- A member in silhouette, in the manner of an eighteenth-century cameo. -->
-              <path d="M122 258C78 246 62 170 88 120C108 80 158 60 196 78C216 90 224 112 222 134L238 162Q242 168 232 171L226 173Q234 179 227 185Q233 191 223 197Q221 213 201 215Q186 217 184 233L188 262C240 272 282 302 292 380L8 380C18 312 66 276 122 262Z" />
-              <circle cx="86" cy="98" r="30" />
-              <path d="M128 286Q160 312 196 284" fill="none" stroke="var(--amber-50)" stroke-width="7" stroke-dasharray="0.1 13" stroke-linecap="round" />
+      <figure class="artifact" data-reveal style="--d:.12s">
+        <div class="artifact__frame">
+          <div class="artifact__canvas">
+            <svg class="artifact__scene" viewBox="0 0 300 380" aria-hidden="true">
+              <!-- The founding server, displayed like a museum piece. -->
+              <defs>
+                <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#fff8e8" stop-opacity=".34" />
+                  <stop offset="1" stop-color="#fff8e8" stop-opacity="0" />
+                </linearGradient>
+                <linearGradient id="gilt" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#fcc652" />
+                  <stop offset=".45" stop-color="#9a6400" />
+                  <stop offset=".7" stop-color="#f4b024" />
+                  <stop offset="1" stop-color="#744b04" />
+                </linearGradient>
+                <linearGradient id="marble" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#fffdf8" />
+                  <stop offset="1" stop-color="#e6ddcd" />
+                </linearGradient>
+              </defs>
+              <path class="artifact__beam" d="M128 0H172L262 318H38Z" fill="url(#beam)" />
+              <ellipse cx="150" cy="318" rx="104" ry="10" fill="#000" opacity=".35" />
+              <g class="artifact__crown" fill="url(#gilt)">
+                <path d="M126 92L132 74L141 84L150 68L159 84L168 74L174 92Z" />
+                <rect x="126" y="92" width="48" height="5" rx="1.5" />
+              </g>
+              <rect x="98" y="100" width="104" height="204" rx="5" fill="#262420" stroke="url(#gilt)" stroke-width="3" />
+              {
+                Array.from({ length: 8 }, (_, i) => (
+                  <g transform={`translate(108 ${112 + i * 23.5})`}>
+                    <rect width="84" height="17" rx="2" fill="#171512" stroke="#3d3934" />
+                    <path d="M8 8.5H52" stroke="#3d3934" stroke-width="3" stroke-linecap="round" />
+                    <circle class="artifact__led" cx="66" cy="8.5" r="2.2" style={`--i:${i}`} />
+                    <circle class="artifact__led artifact__led--slow" cx="75" cy="8.5" r="2.2" style={`--i:${(i * 5) % 8}`} />
+                  </g>
+                ))
+              }
+              <rect x="70" y="304" width="160" height="14" rx="2" fill="url(#marble)" />
+              <rect x="80" y="318" width="140" height="62" fill="url(#marble)" />
+              <path d="M96 332C130 340 150 326 190 350M120 380C140 362 168 368 206 356" stroke="#d2c7b4" fill="none" />
+              <g fill="url(#gilt)">
+                <rect x="30" y="268" width="7" height="112" rx="3" />
+                <circle cx="33.5" cy="266" r="8" />
+                <rect x="263" y="268" width="7" height="112" rx="3" />
+                <circle cx="266.5" cy="266" r="8" />
+              </g>
+              <path d="M38 276C90 330 210 330 262 276" stroke="#6e1d28" stroke-width="7" fill="none" stroke-linecap="round" />
+              <path d="M38 274C90 326 210 326 262 274" stroke="#a03a48" stroke-width="2" fill="none" opacity=".6" />
             </svg>
           </div>
         </div>
         <figcaption class="portrait__placard">
-          <span class="portrait__title">A Member Who Once Flew Commercial</span>
-          <span class="portrait__meta">Ink on regret, 2017. We do not speak of it.</span>
+          <span class="portrait__title">The Founding Server</span>
+          <span class="portrait__meta">Rack-mount steel and gold leaf, 2009. It hosts one inbox, and has never once been asked to share.</span>
         </figcaption>
       </figure>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="section history" aria-labelledby="history-title">
+    <div class="container">
+      <div class="history__head">
+        <p class="eyebrow" data-reveal>Since 2009</p>
+        <h2 class="h2" id="history-title" data-reveal style="--d:.08s">A brief history of <em>standards.</em></h2>
+      </div>
+      <div class="timeline" data-timeline>
+        <div class="timeline__track" aria-hidden="true"><span class="timeline__fill" data-timeline-fill></span></div>
+        <ol class="timeline__list">
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2009</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">The Incident</h3>
+            <p>Our founder discovers that she shares an email provider with her gardener. She leaves a gala early, for the first and only time.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2009</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">The first server</h3>
+            <p>A private server is installed in the east wing, displacing the second-best piano. It hosts one inbox. It still does.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2011</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">Casaguapo is founded</h3>
+            <p>Membership opens to four people, three related by marriage and one by regret. The gardener applies. He is declined gently, then less gently.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2013</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">Private databases</h3>
+            <p>Launched after a member’s records were found sharing a rack with a dentist’s. The rack was decommissioned. We did not ask about the dentist.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2016</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">The beauty division</h3>
+            <p>Founded the morning a member was described in print as “handsome for his age”. The phrase has been retired, as has the publication.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2019</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">The cloud, declined</h3>
+            <p>We were told it was simply other people’s computers. We have met other people.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">2023</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">Jasmin joins</h3>
+            <p>Our concierge declines 340 applicants on her first day, and one founder, on a technicality.</p>
+          </div>
+        </li>
+        <li class="tl-item" data-tl-item>
+          <span class="tl-item__dot" aria-hidden="true"></span>
+          <p class="tl-item__date">Today</p>
+          <div class="tl-item__card">
+            <h3 class="tl-item__title">Still open, technically</h3>
+            <p>Admitting 0.27% of applicants. Every morning our founder checks which email provider the gardener uses. He has switched four times.</p>
+          </div>
+        </li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -330,6 +449,38 @@ const overheard = [
     </div>
   </section>
 </Base>
+
+<script>
+  // History timeline: the line draws down as you scroll, and each entry lights up as the line reaches it.
+  const timeline = document.querySelector<HTMLElement>('[data-timeline]');
+  if (timeline) {
+    const fill = timeline.querySelector<HTMLElement>('[data-timeline-fill]')!;
+    const items = [...timeline.querySelectorAll<HTMLElement>('[data-tl-item]')];
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const box = timeline.getBoundingClientRect();
+      const tip = innerHeight * 0.62;
+      const p = still ? 1 : Math.min(1, Math.max(0, (tip - box.top) / box.height));
+      fill.style.setProperty('--tl-p', p.toFixed(4));
+      const reach = box.top + p * box.height;
+      for (const item of items) {
+        const dot = item.querySelector<HTMLElement>('.tl-item__dot')!.getBoundingClientRect();
+        if (dot.top + dot.height / 2 <= reach + 1) item.classList.add('is-on');
+      }
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    update();
+  }
+</script>
 
 <style>
   /* Hero */
@@ -539,37 +690,55 @@ const overheard = [
     display: grid;
     gap: 18px;
   }
-  .portrait {
+  .artifact {
     margin: 0;
     display: grid;
     justify-items: center;
     gap: 28px;
   }
-  .portrait__frame {
-    width: min(100%, 440px);
-    padding: 22px;
-    border-radius: 50%;
-    background:
-      linear-gradient(145deg, var(--amber-300), var(--amber-700) 38%, var(--amber-400) 62%, var(--amber-800));
+  .artifact__frame {
+    width: min(100%, 420px);
+    padding: 18px;
+    border-radius: 999px 999px var(--radius-sm) var(--radius-sm);
+    background: linear-gradient(145deg, var(--amber-300), var(--amber-700) 38%, var(--amber-400) 62%, var(--amber-800));
     box-shadow:
       inset 0 0 0 2px rgba(255, 255, 255, 0.25),
-      inset 0 0 0 9px rgba(var(--ink-rgb), 0.18),
+      inset 0 0 0 8px rgba(var(--ink-rgb), 0.18),
       var(--shadow-lg);
   }
-  .portrait__canvas {
-    aspect-ratio: 4 / 5;
-    border-radius: 50%;
+  .artifact__canvas {
+    aspect-ratio: 300 / 380;
+    border-radius: 999px 999px 4px 4px;
     overflow: hidden;
-    display: grid;
-    place-items: end center;
-    background: radial-gradient(120% 90% at 40% 25%, var(--amber-50), var(--amber-200) 55%, var(--amber-400));
-    box-shadow: inset 0 0 40px rgba(var(--ink-rgb), 0.25);
+    background: radial-gradient(90% 70% at 50% 18%, var(--stone-700), var(--stone-900) 70%, var(--stone-950));
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
   }
-  .portrait__sitter {
-    width: 78%;
-    margin-bottom: -2px;
-    color: var(--stone-900);
-    fill: var(--stone-900);
+  .artifact__scene {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .artifact__beam {
+    transform-origin: 150px 0;
+    animation: beam 7s ease-in-out infinite alternate;
+  }
+  .artifact__led {
+    fill: var(--amber-400);
+    animation: led 2.4s steps(1, end) infinite;
+    animation-delay: calc(var(--i) * -0.37s);
+  }
+  .artifact__led--slow {
+    fill: #7fd49a;
+    animation-duration: 3.8s;
+  }
+  @keyframes led {
+    0%, 62% { opacity: 1; }
+    63%, 78% { opacity: 0.18; }
+    79% { opacity: 1; }
+  }
+  @keyframes beam {
+    from { opacity: 0.75; transform: skewX(-2deg); }
+    to { opacity: 1; transform: skewX(2deg); }
   }
   .portrait__placard {
     display: grid;
@@ -592,6 +761,168 @@ const overheard = [
     font-size: var(--text-xs);
     line-height: 1.5;
     color: var(--text-secondary);
+  }
+
+  /* History timeline */
+  .history__head {
+    display: grid;
+    gap: 20px;
+    justify-items: center;
+    text-align: center;
+    margin-bottom: clamp(56px, 8vw, 96px);
+  }
+  .timeline {
+    position: relative;
+    --tl-x: 50%;
+  }
+  .timeline__track {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--tl-x);
+    width: 1px;
+    background: var(--border-strong);
+  }
+  .timeline__fill {
+    position: absolute;
+    inset: 0 -1px;
+    background: linear-gradient(180deg, var(--amber-300), var(--accent));
+    transform-origin: top;
+    transform: scaleY(var(--tl-p, 1));
+  }
+  :global(.js) .timeline__fill {
+    --tl-p: 0;
+  }
+  .timeline__fill::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px var(--accent-ring), 0 0 24px 4px rgba(var(--amber-rgb), 0.55);
+    transform: translateX(-50%) scaleY(calc(1 / max(var(--tl-p, 1), 0.001)));
+  }
+  .timeline__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(48px, 7vw, 88px);
+  }
+  .tl-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 96px 1fr;
+    align-items: center;
+  }
+  .tl-item__dot {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    transition:
+      background 0.5s var(--ease),
+      border-color 0.5s var(--ease),
+      box-shadow 0.8s var(--ease),
+      transform 0.8s var(--ease);
+    position: relative;
+    z-index: 1;
+  }
+  .tl-item__date {
+    grid-row: 1;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: var(--accent-text);
+  }
+  .tl-item__card {
+    grid-row: 1;
+    display: grid;
+    gap: 10px;
+    max-width: 30em;
+    padding: 26px 28px;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  .tl-item__card p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .tl-item__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  /* Odd items: card left, date right. Even items: the reverse. */
+  .tl-item:nth-child(odd) .tl-item__card { grid-column: 1; justify-self: end; }
+  .tl-item:nth-child(odd) .tl-item__date { grid-column: 3; }
+  .tl-item:nth-child(even) .tl-item__card { grid-column: 3; }
+  .tl-item:nth-child(even) .tl-item__date { grid-column: 1; justify-self: end; }
+
+  .tl-item.is-on .tl-item__dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 7px var(--accent-ring);
+  }
+  :global(.js) .tl-item__date,
+  :global(.js) .tl-item__card {
+    opacity: 0;
+    transition:
+      opacity 1s var(--ease),
+      transform 1.1s var(--ease),
+      filter 1.1s var(--ease);
+  }
+  :global(.js) .tl-item__date { transform: translateX(calc(var(--dir) * 48px)); }
+  :global(.js) .tl-item__card {
+    transform: translateX(calc(var(--dir) * -32px)) translateY(18px) scale(0.97);
+    filter: blur(6px);
+    transition-delay: 0.12s;
+  }
+  .tl-item:nth-child(odd) { --dir: 1; }
+  .tl-item:nth-child(even) { --dir: -1; }
+  :global(.js) .tl-item.is-on .tl-item__date,
+  :global(.js) .tl-item.is-on .tl-item__card {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  @media (max-width: 760px) {
+    .timeline { --tl-x: 7px; }
+    .tl-item {
+      grid-template-columns: 15px 1fr;
+      column-gap: 24px;
+      row-gap: 10px;
+      align-items: start;
+    }
+    .tl-item__dot { grid-column: 1; margin-top: 12px; }
+    .tl-item .tl-item__date,
+    .tl-item:nth-child(n) .tl-item__date { grid-column: 2; grid-row: 1; justify-self: start; }
+    .tl-item .tl-item__card,
+    .tl-item:nth-child(n) .tl-item__card { grid-column: 2; grid-row: 2; justify-self: stretch; }
+    .tl-item:nth-child(n) { --dir: -0.5; }
+    .tl-item__card { padding: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .timeline__fill { --tl-p: 1; }
+    :global(.js) .tl-item__date,
+    :global(.js) .tl-item__card { opacity: 1; transform: none; filter: none; }
+    .artifact__beam,
+    .artifact__led { animation: none; }
   }
 
   /* Pillars */
