@@ -6,7 +6,7 @@ const ENDPOINT = import.meta.env.PUBLIC_CONCIERGE_URL ?? '/api/concierge';
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 /** Matches MAX_CHAT_REPLIES in api/src/validate.ts. */
-export const MAX_CHAT_REPLIES = 30;
+export const MAX_CHAT_REPLIES = 50;
 
 type Reply = { reply: string; ended: boolean };
 
