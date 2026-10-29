@@ -31,7 +31,6 @@ const isActive = (href: string) => href !== '/#house' && path.startsWith(href.re
     </nav>
 
     <div class="site-header__actions">
-      <a href="/apply/" class="nav__member">Members</a>
       <a href="/apply/" class="btn btn--sm header-cta">Request an invitation</a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
         <span class="visually-hidden">Menu</span>
@@ -130,8 +129,7 @@ const isActive = (href: string) => href !== '/#house' && path.startsWith(href.re
     display: flex;
     gap: clamp(24px, 3vw, 44px);
   }
-  .nav__link,
-  .nav__member {
+  .nav__link {
     position: relative;
     font-size: 12px;
     font-weight: 700;
@@ -163,13 +161,6 @@ const isActive = (href: string) => href !== '/#house' && path.startsWith(href.re
     display: flex;
     align-items: center;
     gap: 28px;
-  }
-  .nav__member {
-    opacity: 0.7;
-    transition: opacity 0.3s;
-  }
-  .nav__member:hover {
-    opacity: 1;
   }
   .site-header.is-overlay:not(.is-scrolled):not(.menu-open) .header-cta {
     --btn-bg: var(--surface);
@@ -284,11 +275,6 @@ const isActive = (href: string) => href !== '/#house' && path.startsWith(href.re
     background: var(--surface);
   }
 
-  @media (max-width: 1040px) {
-    .nav__member {
-      display: none;
-    }
-  }
   @media (max-width: 900px) {
     .site-header__inner {
       grid-template-columns: 1fr auto;
