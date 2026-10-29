@@ -407,6 +407,7 @@ import Icon from './Icon.astro';
   const HISTORY_KEY = 'cg-remarks';
   const SENT_KEY = 'cg-chat-sent';
   const LEFT_KEY = 'cg-jasmin-left';
+  const LOCKOUT_MS = 24 * 60 * 60 * 1000;
 
   const root = document.querySelector<HTMLElement>('[data-concierge-root]')!;
   const remarkBox = root.querySelector<HTMLElement>('[data-remark]')!;
@@ -453,7 +454,18 @@ import Icon from './Icon.astro';
         localStorage.setItem(key, value);
       } catch {}
     },
+    remove(key: string) {
+      try {
+        localStorage.removeItem(key);
+      } catch {}
+    },
   };
+
+  // Jasmin comes back, with a fresh allowance, 24 hours after she leaves.
+  if (Date.now() - Number(local.get(LEFT_KEY) ?? Infinity) > LOCKOUT_MS) {
+    local.remove(LEFT_KEY);
+    local.remove(SENT_KEY);
+  }
 
   const typingDots = () => {
     const el = document.createElement('span');
@@ -648,7 +660,7 @@ import Icon from './Icon.astro';
   });
 
   function leaveChat() {
-    local.set(LEFT_KEY, '1');
+    if (!local.get(LEFT_KEY)) local.set(LEFT_KEY, String(Date.now()));
     const notice = document.createElement('p');
     notice.className = 'concierge__left';
     notice.textContent = 'Jasmin left the chat';
