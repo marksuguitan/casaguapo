@@ -214,6 +214,41 @@ import Icon from './Icon.astro';
     color: var(--stone-900);
     animation: concierge-in 0.6s var(--ease);
   }
+  /* Phones: the chat takes the whole visible screen, sized above the keyboard (see fitPanel). */
+  @media (max-width: 640px) {
+    .concierge__panel {
+      position: fixed;
+      left: 0;
+      top: var(--vv-top, 0px);
+      width: 100%;
+      height: var(--vv-height, 100dvh);
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      z-index: 1;
+      animation-name: concierge-sheet;
+    }
+    .concierge__panel .concierge__panel-head {
+      padding-top: max(18px, env(safe-area-inset-top));
+    }
+    .concierge__panel .concierge__form {
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+    }
+    .concierge:has(.concierge__panel:not([hidden])) .concierge__launcher,
+    .concierge:has(.concierge__panel:not([hidden])) .concierge__remark {
+      visibility: hidden;
+    }
+    :global(html.concierge-open),
+    :global(html.concierge-open body) {
+      overflow: hidden;
+    }
+  }
+  @keyframes concierge-sheet {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
   .concierge__panel-head {
     display: flex;
     align-items: center;
@@ -329,7 +364,8 @@ import Icon from './Icon.astro';
     border-radius: 999px;
     border: 1px solid var(--border-strong);
     background: var(--surface);
-    font-size: 14.5px;
+    /* 16px or more, or iOS zooms the page when the field is focused. */
+    font-size: 16px;
     outline: none;
     transition: border-color 0.3s;
   }
@@ -544,9 +580,23 @@ import Icon from './Icon.astro';
     return p;
   };
 
+  // On phones the panel fills the visual viewport, which shrinks when the keyboard opens.
+  const phone = window.matchMedia('(max-width: 640px)');
+  function fitPanel() {
+    const vv = window.visualViewport;
+    if (panel.hidden || !phone.matches || !vv) return;
+    panel.style.setProperty('--vv-height', `${vv.height}px`);
+    panel.style.setProperty('--vv-top', `${vv.offsetTop}px`);
+    log.scrollTop = log.scrollHeight;
+  }
+  window.visualViewport?.addEventListener('resize', fitPanel);
+  window.visualViewport?.addEventListener('scroll', fitPanel);
+
   function openPanel() {
     remarkBox.hidden = true;
     panel.hidden = false;
+    document.documentElement.classList.toggle('concierge-open', phone.matches);
+    fitPanel();
     launcher.setAttribute('aria-expanded', 'true');
     if (!log.childElementCount) {
       if (local.get(LEFT_KEY)) leaveChat();
@@ -556,6 +606,7 @@ import Icon from './Icon.astro';
   }
   function closePanel() {
     panel.hidden = true;
+    document.documentElement.classList.remove('concierge-open');
     launcher.setAttribute('aria-expanded', 'false');
   }
 
