@@ -6,7 +6,7 @@ const ENDPOINT = import.meta.env.PUBLIC_CONCIERGE_URL ?? '/api/concierge';
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 /** Matches MAX_CHAT_REPLIES in api/src/validate.ts. */
-export const MAX_CHAT_REPLIES = 20;
+export const MAX_CHAT_REPLIES = 30;
 
 type Reply = { reply: string; ended: boolean };
 
@@ -68,7 +68,7 @@ const CHAT_REPLIES = [
 
 const FAREWELLS = [
   'Okay, I’ve done the maths, and you’re officially too poor for me to keep talking to. My time costs more than your car. Bye. 💅',
-  'Sweetie, I’ve given you twenty whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
+  'Sweetie, I’ve given you thirty whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
   'That’s enough charity for one day. Jasmin is going to go talk to someone with a boat.',
 ];
 

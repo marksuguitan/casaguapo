@@ -477,6 +477,9 @@ import Icon from './Icon.astro';
     }
   };
 
+  // The remark on screen; clicking it opens the chat with that remark as Jasmin's opening line.
+  let lastRemark: string | null = null;
+
   async function showRemark(action: string) {
     const count = Number(session.get(COUNT_KEY) ?? 0);
     const now = Date.now();
@@ -486,6 +489,7 @@ import Icon from './Icon.astro';
     session.set(COUNT_KEY, String(count + 1));
 
     window.clearTimeout(hideTimer);
+    lastRemark = null;
     remarkText.replaceChildren(typingDots());
     remarkBox.hidden = false;
 
@@ -493,6 +497,7 @@ import Icon from './Icon.astro';
     const text = await remark(action, previous);
     session.set(HISTORY_KEY, JSON.stringify([...previous, text].slice(-5)));
     remarkText.textContent = text;
+    lastRemark = text;
     inFlight = false;
     hideTimer = window.setTimeout(() => (remarkBox.hidden = true), 9000);
   }
@@ -556,7 +561,7 @@ import Icon from './Icon.astro';
 
   root.querySelector('[data-remark-close]')!.addEventListener('click', () => (remarkBox.hidden = true));
   remarkBox.addEventListener('click', (e) => {
-    if (!(e.target as HTMLElement).closest('[data-remark-close]')) openPanel();
+    if (!(e.target as HTMLElement).closest('[data-remark-close]')) openPanel(false, lastRemark);
   });
 
   // Lets other scripts (e.g. the application form) ask for a remark.
@@ -593,7 +598,8 @@ import Icon from './Icon.astro';
   window.visualViewport?.addEventListener('scroll', fitPanel);
 
   // `auto` is Jasmin opening the chat herself: no focus, so phones don't throw up the keyboard.
-  function openPanel(auto = false) {
+  // `opener` is something Jasmin just said, which the conversation then continues from.
+  function openPanel(auto = false, opener: string | null = null) {
     remarkBox.hidden = true;
     panel.hidden = false;
     session.set(AUTO_OPEN_KEY, '1');
@@ -602,7 +608,14 @@ import Icon from './Icon.astro';
     launcher.setAttribute('aria-expanded', 'true');
     if (!log.childElementCount) {
       if (local.get(LEFT_KEY)) leaveChat();
-      else addMessage('assistant', turns[0].content);
+      else {
+        if (opener) turns[0].content = opener;
+        addMessage('assistant', turns[0].content);
+      }
+    } else if (opener && !input.disabled && !chatting) {
+      // Mid-conversation: add it as another line from Jasmin, folded into her last turn so roles still alternate.
+      addMessage('assistant', opener);
+      turns[turns.length - 1].content += `\n\n${opener}`;
     }
     if (!input.disabled && !auto) input.focus();
   }
@@ -616,10 +629,7 @@ import Icon from './Icon.astro';
         window.setTimeout(() => {
           if (!panel.hidden || session.get(AUTO_OPEN_KEY)) return;
           session.set(AUTO_OPEN_KEY, '1');
-          if (!log.childElementCount) {
-            turns[0].content = 'Oh, you’re scrolling. Sweetie, the prices don’t get lower further down. I checked. What do you want?';
-          }
-          openPanel(true);
+          openPanel(true, 'Oh, you’re scrolling. Sweetie, the prices don’t get lower further down. I checked. What do you want?');
         }, 2000);
       },
       { once: true, passive: true },
