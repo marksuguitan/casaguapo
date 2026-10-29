@@ -1,0 +1,913 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import { images, tiers, technologyServices, lifestyleServices, formatPrice } from '../data/site';
+
+const addresses = [
+  'Mr.',
+  'Ms.',
+  'Mx.',
+  'Dr.',
+  'Your Excellency',
+  'Your Highness',
+  'Simply my first name, as with other icons',
+];
+const wealth = [
+  'Under $50 million (please reconsider)',
+  '$50 million – $500 million',
+  '$500 million – $5 billion',
+  'We stopped counting',
+  'It is held in trust by a small nation',
+];
+const beauty = ['Striking', 'Breathtaking', 'Historically significant', 'Others have had to sit down'];
+const residences = ['One (temporarily)', 'Two to four', 'Five to twelve', 'One per season, per hemisphere'];
+const services = [...technologyServices, ...lifestyleServices];
+
+const criteria = [
+  'You are exceptionally attractive, by consensus rather than self-report alone.',
+  'Your net worth is customarily described in words rather than numbers.',
+  'You have never once used the phrase “value for money” sincerely.',
+];
+---
+
+<Base title="Apply" description="An invitation to be considered for membership of Casaguapo.">
+  <section class="apply">
+    <div class="container apply__grid">
+      <aside class="apply__aside">
+        <div class="apply__intro">
+          <p class="eyebrow" data-reveal>Admissions</p>
+          <h1 class="h1" data-reveal style="--d:.08s">An invitation to be <em>considered.</em></h1>
+          <p class="lede" data-reveal style="--d:.16s">
+            Casaguapo does not accept members. It recognises them. The following questionnaire assists the Committee
+            in recognising you.
+          </p>
+        </div>
+
+        <div class="criteria" data-reveal style="--d:.24s">
+          <p class="criteria__title">Before you begin</p>
+          <ul>
+            {
+              criteria.map((c) => (
+                <li>
+                  <Icon name="check" size={16} />
+                  <span>{c}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <Photo src={images.portraitWoman} alt="A member, photographed in soft light" class="apply__photo" />
+      </aside>
+
+      <div class="apply__main">
+        <form class="application" data-application novalidate>
+          <ol class="progress" aria-label="Application progress">
+            {
+              ['Introductions', 'Circumstances', 'Services', 'In your words'].map((label, i) => (
+                <li class:list={['progress__step', { 'is-current': i === 0 }]} data-progress={i}>
+                  <span class="progress__n">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="progress__label">{label}</span>
+                </li>
+              ))
+            }
+          </ol>
+
+          <!-- Step 1 -->
+          <fieldset class="step" data-step="0">
+            <legend class="step__legend">
+              <span class="h3">Introductions</span>
+              <span class="step__hint">We prefer to know whom we are declining.</span>
+            </legend>
+
+            <div class="fields">
+              <div class="field">
+                <label for="address">Preferred form of address</label>
+                <select id="address" name="address" required>
+                  <option value="" disabled selected>Select</option>
+                  {addresses.map((a) => <option>{a}</option>)}
+                </select>
+                <p class="field__error">We’ll need to know how to address you, regrettably.</p>
+              </div>
+              <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" name="name" autocomplete="name" required placeholder="As it appears on the deed" />
+                <p class="field__error">A name is customary, even for the very famous.</p>
+              </div>
+              <div class="field">
+                <label for="email">Private email</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="Not one shared with an employer"
+                />
+                <p class="field__error">This address does not appear to be in order.</p>
+              </div>
+              <div class="field">
+                <label for="residence">City of primary residence</label>
+                <input id="residence" name="residence" required placeholder="Or the yacht’s current port" />
+                <p class="field__error">Please tell us where you are, approximately.</p>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Step 2 -->
+          <fieldset class="step" data-step="1" hidden>
+            <legend class="step__legend">
+              <span class="h3">Your circumstances</span>
+              <span class="step__hint">Answered in confidence. Judged in confidence, too.</span>
+            </legend>
+
+            <div class="field">
+              <span class="field__label" id="tier-label">Membership sought</span>
+              <div class="choice-cards" role="radiogroup" aria-labelledby="tier-label">
+                {
+                  tiers.map((t, i) => (
+                    <label class="choice-card">
+                      <input type="radio" name="tier" value={t.name} data-tier-id={t.id} required checked={i === 1} />
+                      <span class="choice-card__body">
+                        <span class="choice-card__name">{t.name}</span>
+                        <span class="choice-card__price">{formatPrice(t.price)} / month</span>
+                      </span>
+                      <span class="choice-card__mark" aria-hidden="true">
+                        <Icon name="check" size={14} />
+                      </span>
+                    </label>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div class="fields">
+              <div class="field">
+                <label for="wealth">Approximate net worth</label>
+                <select id="wealth" name="wealth" required>
+                  <option value="" disabled selected>Select</option>
+                  {wealth.map((w) => <option>{w}</option>)}
+                </select>
+                <p class="field__error">An estimate will do. Round up.</p>
+              </div>
+              <div class="field">
+                <label for="residences">Residences</label>
+                <select id="residences" name="residences" required>
+                  <option value="" disabled selected>Select</option>
+                  {residences.map((r) => <option>{r}</option>)}
+                </select>
+                <p class="field__error">Please include the ones you rarely visit.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field__label" id="beauty-label">How would you describe your beauty?</span>
+              <div class="chips" role="radiogroup" aria-labelledby="beauty-label">
+                {
+                  beauty.map((b) => (
+                    <label class="chip">
+                      <input type="radio" name="beauty" value={b} required />
+                      <span>{b}</span>
+                    </label>
+                  ))
+                }
+              </div>
+              <p class="field__error">Modesty is admirable, but we do need an answer.</p>
+            </div>
+          </fieldset>
+
+          <!-- Step 3 -->
+          <fieldset class="step" data-step="2" hidden>
+            <legend class="step__legend">
+              <span class="h3">Services of interest</span>
+              <span class="step__hint">Select all that apply. Members typically select all.</span>
+            </legend>
+            <div class="service-picks">
+              {
+                services.map((s) => (
+                  <label class="service-pick">
+                    <input type="checkbox" name="services" value={s.title} />
+                    <span class="service-pick__icon">
+                      <Icon name={s.icon} size={22} />
+                    </span>
+                    <span class="service-pick__text">
+                      <span class="service-pick__title">{s.title}</span>
+                      <span class="service-pick__summary">{s.summary}</span>
+                    </span>
+                    <span class="choice-card__mark" aria-hidden="true">
+                      <Icon name="check" size={14} />
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+            <p class="field__error field__error--group" data-services-error>
+              Please select at least one. We are, after all, a service.
+            </p>
+          </fieldset>
+
+          <!-- Step 4 -->
+          <fieldset class="step" data-step="3" hidden>
+            <legend class="step__legend">
+              <span class="h3">In your own words</span>
+              <span class="step__hint">Brevity is a sign of breeding.</span>
+            </legend>
+            <div class="field">
+              <label for="statement">Why are you extraordinary?</label>
+              <textarea
+                id="statement"
+                name="statement"
+                rows="5"
+                maxlength="400"
+                required
+                placeholder="In no more than 400 characters. Most members need fewer."></textarea>
+              <div class="field__meta">
+                <p class="field__error">The Committee will need at least a sentence.</p>
+                <span class="counter" data-counter>0 / 400</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="referral">Referred by <span class="optional">(optional)</span></label>
+              <input id="referral" name="referral" placeholder="A current member, a monarch, or a mutual yacht" />
+            </div>
+            <label class="consent">
+              <input type="checkbox" name="consent" required />
+              <span>
+                I understand that membership is subject to aesthetic, financial and entirely arbitrary approval, and that
+                silence should be interpreted generously.
+              </span>
+            </label>
+            <p class="field__error field__error--group" data-consent-error>Please acknowledge the terms. They are firm.</p>
+          </fieldset>
+
+          <div class="application__nav">
+            <button type="button" class="btn btn--ghost" data-back hidden>Back</button>
+            <button type="button" class="btn" data-next>Continue <Icon name="arrow" /></button>
+            <button type="submit" class="btn" data-submit hidden>Submit for consideration <Icon name="arrow" /></button>
+          </div>
+          <p class="application__fine fine">
+            Your answers are reviewed by the Concierge and are not stored by Casaguapo. The Committee has, in any case,
+            already formed an opinion.
+          </p>
+        </form>
+
+        <!-- Assessment -->
+        <div class="assessment" data-assessment hidden aria-live="polite">
+          <div class="assessment__ring" aria-hidden="true">
+            <span></span>
+          </div>
+          <p class="eyebrow">Assessment in progress</p>
+          <p class="assessment__status" data-status>Verifying financial standing…</p>
+        </div>
+
+        <!-- Result -->
+        <div class="result" data-result hidden>
+          <p class="eyebrow">Application received</p>
+          <h2 class="h2">Thank you. The Committee will <em>convene.</em></h2>
+          <p class="result__ref">Reference <span data-ref></span></p>
+          <div class="result__letter">
+            <p class="result__letter-label">A note from the Committee</p>
+            <p class="result__letter-text" data-letter></p>
+          </div>
+          <p class="lede">
+            Should your application be successful, you will be contacted. Should it not, you will not, and we trust you
+            will understand the silence in the spirit in which it is intended.
+          </p>
+          <div class="result__actions">
+            <a href="/" class="btn">Return to the House <Icon name="arrow" /></a>
+            <a href="/membership/" class="btn btn--ghost">Reconsider your tier</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .apply {
+    padding-top: calc(var(--header-h) + clamp(48px, 7vw, 104px));
+    padding-bottom: clamp(88px, 10vw, 140px);
+  }
+  .apply__grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(48px, 7vw, 120px);
+    align-items: start;
+  }
+  .apply__aside {
+    position: sticky;
+    top: 120px;
+    display: grid;
+    gap: 40px;
+  }
+  .apply__intro {
+    display: grid;
+    gap: 24px;
+  }
+  .criteria {
+    padding: 28px;
+    border-radius: var(--radius);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+  }
+  .criteria__title {
+    margin: 0 0 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--accent-text);
+  }
+  .criteria ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+    font-size: 14.5px;
+  }
+  .criteria li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 12px;
+  }
+  .criteria li :global(svg) {
+    margin-top: 4px;
+    color: var(--accent-text);
+  }
+  .apply__photo {
+    aspect-ratio: 16 / 10;
+  }
+
+  .apply__main {
+    padding: clamp(28px, 4vw, 56px);
+    border-radius: var(--radius-lg);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  /* Progress */
+  .progress {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .progress__step {
+    display: grid;
+    gap: 6px;
+    padding-top: 14px;
+    border-top: 2px solid var(--border);
+    color: var(--stone-400);
+    transition:
+      color 0.5s,
+      border-color 0.5s;
+  }
+  .progress__step.is-current,
+  .progress__step.is-done {
+    border-color: var(--accent);
+    color: var(--stone-900);
+  }
+  .progress__n {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .progress__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+  }
+
+  /* Steps */
+  .step {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: grid;
+    gap: 28px;
+    animation: step-in 0.7s var(--ease);
+  }
+  .step[hidden] {
+    display: none;
+  }
+  @keyframes step-in {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+  }
+  .step__legend {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin-bottom: 8px;
+  }
+  .step__hint {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .field {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .field label,
+  .field__label {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--stone-700);
+  }
+  .optional {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 15px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    font-size: 15.5px;
+    outline: none;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      background 0.3s;
+  }
+  .field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236f685e' stroke-width='1.3'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    padding-right: 44px;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.6;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--stone-400);
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    background: var(--surface-card);
+    box-shadow: 0 0 0 4px rgba(var(--amber-rgb), 0.14);
+  }
+  .field__error {
+    display: none;
+    margin: 0;
+    font-size: 13px;
+    color: var(--danger);
+  }
+  .field.is-invalid .field__error,
+  .field__error--group.is-visible {
+    display: block;
+  }
+  .field.is-invalid input,
+  .field.is-invalid select,
+  .field.is-invalid textarea {
+    border-color: rgba(138, 75, 58, 0.55);
+  }
+  .field__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .counter {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Choice cards */
+  .choice-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .choice-card,
+  .service-pick {
+    position: relative;
+    display: flex;
+    cursor: pointer;
+    border-radius: 16px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    transition:
+      border-color 0.4s,
+      box-shadow 0.4s,
+      background 0.4s,
+      transform 0.4s var(--ease);
+  }
+  .choice-card:hover,
+  .service-pick:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .choice-card input,
+  .service-pick input,
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .choice-card__body {
+    display: grid;
+    gap: 6px;
+    padding: 20px 44px 20px 20px;
+  }
+  .choice-card__name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.15;
+  }
+  .choice-card__price {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+  .choice-card__mark {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    color: transparent;
+    transition: all 0.4s var(--ease);
+  }
+  .choice-card:has(input:checked),
+  .service-pick:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--surface-card);
+    box-shadow: 0 0 0 4px rgba(var(--amber-rgb), 0.12);
+  }
+  .choice-card:has(input:checked) .choice-card__mark,
+  .service-pick:has(input:checked) .choice-card__mark {
+    background: var(--stone-900);
+    border-color: var(--stone-900);
+    color: var(--accent-soft);
+  }
+  .choice-card:has(input:focus-visible),
+  .service-pick:has(input:focus-visible),
+  .chip:has(input:focus-visible) {
+    outline: 1.5px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip span {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.4s var(--ease);
+  }
+  .chip:hover span {
+    border-color: var(--accent);
+  }
+  .chip input:checked + span {
+    background: var(--stone-900);
+    border-color: var(--stone-900);
+    color: var(--surface);
+  }
+
+  .service-picks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .service-pick {
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px 44px 18px 18px;
+  }
+  .service-pick__icon {
+    flex: none;
+    color: var(--accent-text);
+    margin-top: 2px;
+  }
+  .service-pick__text {
+    display: grid;
+    gap: 4px;
+  }
+  .service-pick__title {
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .service-pick__summary {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .consent {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 14px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .consent input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--stone-900);
+  }
+
+  .application__nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .application__nav [data-back] {
+    margin-right: auto;
+  }
+  .application__nav [hidden] {
+    display: none;
+  }
+  .application__fine {
+    margin: 20px 0 0;
+    text-align: right;
+  }
+
+  /* Assessment */
+  .assessment {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 20px;
+    padding-block: 80px;
+  }
+  .assessment[hidden],
+  .result[hidden] {
+    display: none;
+  }
+  .assessment__ring {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .assessment__ring span {
+    position: absolute;
+    inset: -1px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    border-top-color: var(--accent);
+    animation: spin 1.4s var(--ease) infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .assessment__status {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    animation: step-in 0.6s var(--ease);
+  }
+
+  /* Result */
+  .result {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+    animation: step-in 0.8s var(--ease);
+  }
+  .result__ref {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+  }
+  .result__ref span {
+    color: var(--stone-900);
+  }
+  .result__letter {
+    width: 100%;
+    padding: 28px 32px;
+    border-radius: var(--radius);
+    background: var(--surface-sunken);
+    border-left: 2px solid var(--accent);
+  }
+  .result__letter-label {
+    margin: 0 0 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--accent-text);
+  }
+  .result__letter-text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  .result__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 1024px) {
+    .apply__grid {
+      grid-template-columns: 1fr;
+    }
+    .apply__aside {
+      position: static;
+    }
+    .apply__photo {
+      display: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .fields,
+    .choice-cards,
+    .service-picks {
+      grid-template-columns: 1fr;
+    }
+    .progress__label {
+      display: none;
+    }
+    .application__nav .btn {
+      flex: 1;
+      padding-inline: 18px;
+    }
+    .application__fine {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  import { verdict } from '../scripts/concierge';
+
+  const form = document.querySelector<HTMLFormElement>('[data-application]')!;
+  const steps = [...form.querySelectorAll<HTMLFieldSetElement>('[data-step]')];
+  const progress = [...form.querySelectorAll<HTMLElement>('[data-progress]')];
+  const backBtn = form.querySelector<HTMLButtonElement>('[data-back]')!;
+  const nextBtn = form.querySelector<HTMLButtonElement>('[data-next]')!;
+  const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const assessment = document.querySelector<HTMLElement>('[data-assessment]')!;
+  const status = document.querySelector<HTMLElement>('[data-status]')!;
+  const result = document.querySelector<HTMLElement>('[data-result]')!;
+  let current = 0;
+
+  // Preselect the tier chosen on the membership page.
+  const tierParam = new URLSearchParams(location.search).get('tier');
+  if (tierParam) {
+    const radio = form.querySelector<HTMLInputElement>(`input[data-tier-id="${CSS.escape(tierParam)}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  const textarea = form.querySelector<HTMLTextAreaElement>('#statement')!;
+  const counter = form.querySelector<HTMLElement>('[data-counter]')!;
+  textarea.addEventListener('input', () => (counter.textContent = `${textarea.value.length} / 400`));
+
+  function show(i: number) {
+    steps.forEach((s, idx) => (s.hidden = idx !== i));
+    progress.forEach((p, idx) => {
+      p.classList.toggle('is-current', idx === i);
+      p.classList.toggle('is-done', idx < i);
+    });
+    backBtn.hidden = i === 0;
+    nextBtn.hidden = i === steps.length - 1;
+    submitBtn.hidden = i !== steps.length - 1;
+    current = i;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function validate(step: HTMLFieldSetElement): boolean {
+    let ok = true;
+    step.querySelectorAll<HTMLElement>('.field').forEach((field) => {
+      const controls = [...field.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]')];
+      if (!controls.length) return;
+      const valid = controls[0] instanceof HTMLInputElement && controls[0].type === 'radio'
+        ? controls.some((c) => (c as HTMLInputElement).checked)
+        : controls.every((c) => c.checkValidity() && c.value.trim() !== '');
+      field.classList.toggle('is-invalid', !valid);
+      if (!valid) ok = false;
+    });
+
+    const servicesError = step.querySelector<HTMLElement>('[data-services-error]');
+    if (servicesError) {
+      const any = step.querySelectorAll('input[name="services"]:checked').length > 0;
+      servicesError.classList.toggle('is-visible', !any);
+      if (!any) ok = false;
+    }
+    const consentError = step.querySelector<HTMLElement>('[data-consent-error]');
+    if (consentError) {
+      const agreed = step.querySelector<HTMLInputElement>('input[name="consent"]')!.checked;
+      consentError.classList.toggle('is-visible', !agreed);
+      if (!agreed) ok = false;
+    }
+
+    if (!ok) step.querySelector<HTMLElement>('.is-invalid input, .is-invalid select, .is-invalid textarea')?.focus();
+    return ok;
+  }
+
+  form.addEventListener('input', (e) => {
+    (e.target as HTMLElement).closest('.field')?.classList.remove('is-invalid');
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (validate(steps[current])) show(current + 1);
+  });
+  backBtn.addEventListener('click', () => show(current - 1));
+
+  const statuses = [
+    'Verifying financial standing…',
+    'Reviewing bone structure…',
+    'Consulting the Committee…',
+    'Comparing against existing members…',
+    'Locating your yacht…',
+    'Composing a response…',
+  ];
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validate(steps[current])) return;
+
+    const data = new FormData(form);
+    const application: Record<string, string | string[]> = {};
+    for (const key of ['address', 'name', 'residence', 'tier', 'wealth', 'beauty', 'residences', 'statement', 'referral']) {
+      application[key] = String(data.get(key) ?? '');
+    }
+    application.services = data.getAll('services').map(String);
+
+    form.hidden = true;
+    assessment.hidden = false;
+    let i = 0;
+    status.textContent = statuses[0];
+    const ticker = window.setInterval(() => {
+      i = Math.min(i + 1, statuses.length - 1);
+      status.textContent = statuses[i];
+    }, 1400);
+
+    const minimumSuspense = new Promise((r) => setTimeout(r, statuses.length * 1400));
+    const [letter] = await Promise.all([verdict(application), minimumSuspense]);
+    window.clearInterval(ticker);
+
+    document.querySelector('[data-ref]')!.textContent = `CG-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    document.querySelector('[data-letter]')!.textContent = letter;
+    assessment.hidden = true;
+    result.hidden = false;
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+</script>

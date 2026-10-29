@@ -1,0 +1,504 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { tiers, formatPrice } from '../data/site';
+
+type Cell = boolean | string;
+const comparison: { label: string; values: [Cell, Cell, Cell] }[] = [
+  { label: 'Private email hosting', values: ['One address', 'Unlimited aliases', 'Unlimited, plus your rivals’ typos'] },
+  { label: 'Private database hosting', values: [false, 'Dedicated instance', 'Three jurisdictions'] },
+  { label: 'Domain registration & management', values: ['One domain', 'Twelve domains', 'Every domain you desire'] },
+  { label: 'Digital privacy & security', values: ['Standard discretion', 'Heightened discretion', 'Total disappearance, on request'] },
+  { label: 'Beauty enhancement & optimisation', values: [false, 'Quarterly review', 'Continuous, with lighting director'] },
+  { label: 'Private personal assistant', values: ['Shared, weekdays', 'Dedicated, five days', 'A team, always'] },
+  { label: 'Friends for Hire', values: ['Two per quarter', 'Six occasions a month', 'Standing entourage'] },
+  { label: 'Lifestyle concierge', values: [false, true, true] },
+  { label: 'Admiration, delivered sincerely', values: [false, 'Business hours', 'Around the clock'] },
+  { label: 'Members’ lounge entrance', values: ['Side', 'Front', 'Yours, specifically'] },
+];
+
+const faqs = [
+  {
+    q: 'Is there a free trial?',
+    a: 'There is not. Our members are not accustomed to trying things. Things are accustomed to trying for them.',
+  },
+  {
+    q: 'Can I pay annually for a discount?',
+    a: 'You may pay annually. There is no discount. In our experience, discounts make people nervous.',
+  },
+  {
+    q: 'May I move between tiers?',
+    a: 'Members may ascend at any time, effective immediately. Descending is also possible, though it is noted.',
+  },
+  {
+    q: 'What happens if I become less attractive?',
+    a: 'Members are reviewed quarterly. Should any decline be observed, our Beauty Enhancement team will intervene well before our Membership Committee is obliged to.',
+  },
+  {
+    q: 'May I bring a guest?',
+    a: 'Guests are welcome, subject to the same standards as members. We would gently ask that you not bring anyone who will make the photographs worse.',
+  },
+  {
+    q: 'Why was my application declined?',
+    a: 'We do not disclose reasons. It would be unkind to both of us.',
+  },
+  {
+    q: 'Is Casaguapo a real company?',
+    a: 'Casaguapo is a work of satire. Our standards, however, are entirely real.',
+  },
+];
+---
+
+<Base title="Membership" description="Three memberships, presented without apology.">
+  <section class="page-hero">
+    <div class="container page-hero__grid">
+      <div class="stack" style="--stack:28px">
+        <p class="eyebrow" data-reveal>Membership</p>
+        <h1 class="h1" data-reveal style="--d:.08s">
+          Privacy is a fundamental right. Membership is a <em>privilege.</em>
+        </h1>
+      </div>
+      <p class="lede" data-reveal style="--d:.16s">
+        Three memberships, each billed monthly and in advance. Prices are presented in US dollars as a courtesy to
+        those who still think in them.
+      </p>
+    </div>
+  </section>
+
+  <section class="section tiers-section">
+    <div class="container">
+      <div class="tiers">
+        {
+          tiers.map((t, i) => (
+            <article class:list={['tier', { 'is-featured': t.featured }]} data-reveal style={`--d:${i * 0.1}s`}>
+              {t.featured && (
+                <span class="tier__badge">
+                  <Icon name="crown" size={14} /> By nomination
+                </span>
+              )}
+              <header class="tier__head">
+                <p class="tier__index">{['I', 'II', 'III'][i]}.</p>
+                <h2 class="tier__name">{t.name}</h2>
+                <p class="tier__positioning">{t.positioning}</p>
+              </header>
+
+              <div class="tier__price">
+                <span class="tier__amount">{formatPrice(t.price)}</span>
+                <span class="tier__period">per month</span>
+              </div>
+
+              <p class="tier__desc">“{t.description}”</p>
+
+              <ul class="tier__list">
+                {t.includes.map((item) => (
+                  <li>
+                    <Icon name="check" size={16} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="tier__foot">
+                <a
+                  href={`/apply/?tier=${t.id}`}
+                  data-concierge={`clicked “${t.cta}” on the ${t.name} membership, ${formatPrice(t.price)} a month`}
+                  class:list={['btn', t.featured ? 'btn--light' : i === 0 ? 'btn--ghost' : '']}
+                >
+                  {t.cta} <Icon name="arrow" />
+                </a>
+                {t.smallPrint && <p class="tier__small">{t.smallPrint}</p>}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="tiers__note fine" data-reveal>
+        All memberships are billed monthly, in advance. Annual billing is available. It is not cheaper.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--cream compare" aria-labelledby="compare-title">
+    <div class="container">
+      <div class="compare__head">
+        <p class="eyebrow" data-reveal>In detail</p>
+        <h2 class="h2" id="compare-title" data-reveal style="--d:.08s">A considered <em>comparison.</em></h2>
+      </div>
+
+      <div class="compare__wrap" data-reveal>
+        <table class="compare__table">
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden">Service</span></th>
+              {
+                tiers.map((t) => (
+                  <th scope="col" class:list={{ 'is-featured': t.featured }}>
+                    <span class="compare__tier">{t.name}</span>
+                    <span class="compare__price">{formatPrice(t.price)}</span>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              comparison.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  {row.values.map((v, i) => (
+                    <td class:list={{ 'is-featured': tiers[i].featured }}>
+                      {v === true ? (
+                        <span class="compare__yes">
+                          <Icon name="check" size={18} />
+                          <span class="visually-hidden">Included</span>
+                        </span>
+                      ) : v === false ? (
+                        <span class="compare__no">
+                          <span aria-hidden="true">—</span>
+                          <span class="visually-hidden">Not included</span>
+                        </span>
+                      ) : (
+                        v
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq" id="faq">
+    <div class="container faq__grid">
+      <div class="faq__intro">
+        <p class="eyebrow" data-reveal>Questions</p>
+        <h2 class="h2" data-reveal style="--d:.08s">Asked, <em>occasionally.</em></h2>
+        <p class="lede" data-reveal style="--d:.16s">
+          Members rarely have questions. Applicants, we find, have several.
+        </p>
+      </div>
+      <div class="faq__list" data-reveal>
+        {
+          faqs.map((f) => (
+            <details class="faq__item">
+              <summary>
+                <span>{f.q}</span>
+                <span class="faq__icon" aria-hidden="true">
+                  <Icon name="plus" size={18} />
+                </span>
+              </summary>
+              <div class="faq__answer">
+                <p>{f.a}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 28px);
+    align-items: stretch;
+  }
+  .tier {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(32px, 3.4vw, 48px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--surface-raised), var(--surface));
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform 0.8s var(--ease),
+      box-shadow 0.8s var(--ease);
+  }
+  .tier:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
+  .tier.is-featured {
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(var(--amber-rgb), 0.16), transparent 70%),
+      linear-gradient(180deg, var(--stone-800), var(--stone-900));
+    color: var(--surface);
+    border-color: rgba(var(--amber-rgb), 0.35);
+    box-shadow: var(--shadow-lg);
+  }
+  .tier__badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--amber-rgb), 0.45);
+    color: var(--accent-soft);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+  }
+  .tier__index {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--accent-text);
+  }
+  .is-featured .tier__index {
+    color: var(--accent-soft);
+  }
+  .tier__name {
+    margin: 10px 0 12px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(30px, 2.6vw, 38px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    min-height: 2.1em;
+  }
+  .tier__positioning {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    min-height: 4.8em;
+  }
+  .is-featured .tier__positioning,
+  .is-featured .tier__desc,
+  .is-featured .tier__period,
+  .is-featured .tier__small {
+    color: var(--stone-400);
+  }
+  .tier__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    padding-block: 28px;
+    margin-block: 24px;
+    border-block: 1px solid var(--border);
+  }
+  .is-featured .tier__price {
+    border-color: var(--border-inverse);
+  }
+  .tier__amount {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 3.6vw, 54px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .tier__period {
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .tier__desc {
+    margin: 0 0 28px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--stone-700);
+  }
+  .tier__list {
+    list-style: none;
+    margin: 0 0 36px;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    font-size: 14.5px;
+  }
+  .tier__list li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 12px;
+  }
+  .tier__list li :global(svg) {
+    margin-top: 4px;
+    color: var(--accent);
+  }
+  .tier__foot {
+    margin-top: auto;
+    display: grid;
+    gap: 16px;
+  }
+  .tier__foot .btn {
+    width: 100%;
+  }
+  .tier__small {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  .tiers__note {
+    margin: 40px 0 0;
+    text-align: center;
+  }
+
+  /* Comparison */
+  .compare__head {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .compare__wrap {
+    position: relative; /* contains the visually-hidden labels inside the scroller */
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .compare__table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  .compare__table th,
+  .compare__table td {
+    padding: 20px 24px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare__table tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  .compare__table thead th {
+    vertical-align: bottom;
+    padding-top: 32px;
+  }
+  .compare__table tbody th {
+    font-weight: 500;
+    width: 28%;
+  }
+  .compare__table td {
+    color: var(--text-secondary);
+  }
+  .compare__table .is-featured {
+    background: rgba(var(--amber-rgb), 0.1);
+    color: var(--stone-900);
+  }
+  .compare__tier {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .compare__price {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent-text);
+  }
+  .compare__yes {
+    color: var(--accent-text);
+  }
+  .compare__no {
+    color: var(--stone-300);
+  }
+
+  /* FAQ */
+  .faq__grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(48px, 8vw, 128px);
+  }
+  .faq__intro {
+    display: grid;
+    gap: 24px;
+    align-content: start;
+  }
+  .faq__list {
+    border-top: 1px solid var(--border);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq__item summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding-block: 26px;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(22px, 2vw, 27px);
+    line-height: 1.2;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    transition:
+      transform 0.6s var(--ease),
+      background 0.4s,
+      color 0.4s;
+  }
+  .faq__item[open] .faq__icon {
+    transform: rotate(45deg);
+    background: var(--stone-900);
+    color: var(--surface);
+  }
+  .faq__item summary:hover .faq__icon {
+    border-color: var(--accent);
+  }
+  .faq__answer p {
+    margin: 0;
+    padding-bottom: 28px;
+    max-width: 34em;
+    color: var(--text-secondary);
+    animation: faq-in 0.6s var(--ease);
+  }
+  @keyframes faq-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .tiers {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+      margin-inline: auto;
+    }
+    .tier__name,
+    .tier__positioning {
+      min-height: 0;
+    }
+    .faq__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

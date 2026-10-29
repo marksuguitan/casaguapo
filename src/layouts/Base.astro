@@ -1,0 +1,76 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Concierge from '../components/Concierge.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  overlayHeader?: boolean;
+}
+
+const {
+  title,
+  description = 'Exceptional technology. For exceptionally attractive people. Casaguapo is a private technology and lifestyle concierge, by invitation only.',
+  overlayHeader = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · Casaguapo` : 'Casaguapo · Private Technology & Lifestyle Concierge';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f8f4ec" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header overlay={overlayHeader} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Concierge />
+
+    <script>
+      // Scroll reveals
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('is-in'));
+      }
+
+      // Photographs fade out gracefully onto their toned backdrop if they can't load
+      document.querySelectorAll<HTMLImageElement>('img[data-photo]').forEach((img) => {
+        const fail = () => img.classList.add('is-missing');
+        if (img.complete && img.naturalWidth === 0) fail();
+        img.addEventListener('error', fail);
+      });
+    </script>
+  </body>
+</html>

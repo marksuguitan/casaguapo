@@ -1,0 +1,351 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import { technologyServices, lifestyleServices, type Service } from '../data/site';
+
+const groups: { id: string; numeral: string; title: string; intro: string; services: Service[] }[] = [
+  {
+    id: 'technology',
+    numeral: 'I.',
+    title: 'Private Technology',
+    intro:
+      'Infrastructure built, operated and guarded exclusively for our members. No shared servers, no shared inboxes, and no shared anything with anyone you have not personally approved.',
+    services: technologyServices,
+  },
+  {
+    id: 'lifestyle',
+    numeral: 'II.',
+    title: 'Beauty & Lifestyle',
+    intro:
+      'For the hours that remain once your technology has been perfected. Our lifestyle team manages appearance, logistics and companionship with the same discretion as our engineers manage your data.',
+    services: lifestyleServices,
+  },
+];
+
+const steps = [
+  {
+    n: '01',
+    title: 'Application',
+    body: 'You submit a brief questionnaire. Most applicants find it straightforward. Most applicants are declined.',
+  },
+  {
+    n: '02',
+    title: 'Assessment',
+    body: 'Our committee conducts an aesthetic, financial and entirely arbitrary review. Proceedings are confidential, including from the committee.',
+  },
+  {
+    n: '03',
+    title: 'Introduction',
+    body: 'Successful applicants are welcomed in person, at a location chosen for its lighting, by a director chosen for theirs.',
+  },
+  {
+    n: '04',
+    title: 'Ongoing excellence',
+    body: 'Your dedicated team assumes responsibility for everything you would prefer not to think about, beginning immediately and continuing indefinitely.',
+  },
+];
+---
+
+<Base title="Services" description="Private technology and lifestyle services for exceptionally distinguished individuals.">
+  <section class="page-hero">
+    <div class="container page-hero__grid">
+      <div class="stack" style="--stack:28px">
+        <p class="eyebrow" data-reveal>The Services</p>
+        <h1 class="h1" data-reveal style="--d:.08s">
+          A complete infrastructure for an <em>incomplete</em> world.
+        </h1>
+      </div>
+      <p class="lede" data-reveal style="--d:.16s">
+        Eight services, each available only to members, each delivered with a level of care that most people will
+        never experience and, frankly, would not know what to do with.
+      </p>
+    </div>
+    <nav class="container service-index" aria-label="Service index" data-reveal style="--d:.24s">
+      {
+        [...technologyServices, ...lifestyleServices].map((s, i) => (
+          <a href={`#${s.slug}`}>
+            <span>{String(i + 1).padStart(2, '0')}</span>
+            {s.title}
+          </a>
+        ))
+      }
+    </nav>
+  </section>
+
+  {
+    groups.map((g, gi) => (
+      <section class:list={['section', 'group', { 'section--cream': gi === 1 }]} id={g.id}>
+        <div class="container">
+          <header class="group__head">
+            <p class="group__numeral" data-reveal>{g.numeral}</p>
+            <h2 class="h2" data-reveal style="--d:.06s">{g.title}</h2>
+            <p class="lede" data-reveal style="--d:.12s">{g.intro}</p>
+          </header>
+
+          <div class="group__list">
+            {g.services.map((s, i) => (
+              <article class:list={['service', { 'is-flipped': i % 2 === 1 }]} id={s.slug}>
+                <Photo src={s.image} alt={s.imageAlt} class="service__photo" />
+                <div class="service__body">
+                  <div class="service__top" data-reveal>
+                    <span class="service__icon">
+                      <Icon name={s.icon} size={24} />
+                    </span>
+                    <span class="service__kicker">{s.kicker}</span>
+                  </div>
+                  <h3 class="h3 service__title" data-reveal style="--d:.06s">{s.title}</h3>
+                  <p class="service__desc" data-reveal style="--d:.12s">{s.description}</p>
+                  <ul class="service__includes" data-reveal style="--d:.18s">
+                    {s.includes.map((item) => (
+                      <li>
+                        <Icon name="check" size={16} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p class="service__note" data-reveal style="--d:.24s">{s.note}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="section section--dark process" id="process">
+    <div class="container">
+      <div class="process__head">
+        <p class="eyebrow" data-reveal>Engagement</p>
+        <h2 class="h2" data-reveal style="--d:.08s">How one becomes a client. <em>Rarely.</em></h2>
+      </div>
+      <ol class="process__steps">
+        {
+          steps.map((s, i) => (
+            <li class="step" data-reveal style={`--d:${i * 0.1}s`}>
+              <span class="step__n">{s.n}</span>
+              <h3 class="step__title">{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="process__cta" data-reveal>
+        <a href="/membership/" class="btn btn--light">View membership <Icon name="arrow" /></a>
+        <a href="/apply/" class="btn btn--ghost-light">Apply</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .service-index {
+    margin-top: clamp(48px, 6vw, 80px);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+  }
+  .service-index a {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 18px 16px 18px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.4s, padding 0.5s var(--ease);
+  }
+  .service-index a span {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--accent-text);
+    font-size: 14px;
+  }
+  .service-index a:hover {
+    color: var(--accent-text);
+    padding-left: 6px;
+  }
+
+  .group__head {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    align-items: end;
+    gap: 16px 48px;
+    padding-bottom: clamp(48px, 6vw, 80px);
+    margin-bottom: clamp(48px, 6vw, 96px);
+    border-bottom: 1px solid var(--border);
+  }
+  .group__numeral {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(56px, 6vw, 88px);
+    line-height: 0.9;
+    color: var(--accent);
+  }
+  .group__head .lede {
+    justify-self: end;
+    font-size: 16px;
+  }
+
+  .group__list {
+    display: grid;
+    gap: clamp(80px, 10vw, 144px);
+  }
+  .service {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: clamp(40px, 7vw, 112px);
+    align-items: center;
+    scroll-margin-top: 120px;
+  }
+  .service.is-flipped .service__photo {
+    order: 2;
+  }
+  .service__photo {
+    aspect-ratio: 5 / 6;
+    box-shadow: var(--shadow);
+  }
+  .service:hover .service__photo :global(img) {
+    transform: scale(1.035);
+  }
+  .service__top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .service__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--amber-rgb), 0.5);
+    color: var(--accent-text);
+    background: rgba(255, 255, 255, 0.4);
+  }
+  .service__kicker {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+  }
+  .service__title {
+    font-size: clamp(32px, 3.4vw, 46px);
+    font-weight: 500;
+  }
+  .service__desc {
+    margin: 20px 0 32px;
+    font-size: 16.5px;
+    color: var(--text-secondary);
+    max-width: 32em;
+  }
+  .service__includes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .service__includes li {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 14px;
+    padding-block: 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .service__includes li :global(svg) {
+    margin-top: 4px;
+    color: var(--accent-text);
+  }
+  .service__note {
+    margin: 28px 0 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--stone-700);
+    padding-left: 20px;
+    border-left: 1px solid var(--accent);
+  }
+
+  .process__head {
+    display: grid;
+    gap: 20px;
+    margin-bottom: clamp(56px, 7vw, 96px);
+  }
+  .process__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .step {
+    padding-top: 28px;
+    border-top: 1px solid var(--border-inverse);
+  }
+  .step__n {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 19px;
+    color: var(--accent-soft);
+  }
+  .step__title {
+    margin: 20px 0 12px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.1;
+  }
+  .step p {
+    margin: 0;
+    color: var(--stone-400);
+    font-size: 15px;
+  }
+  .process__cta {
+    margin-top: clamp(56px, 7vw, 96px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 1024px) {
+    .service-index {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .process__steps {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: 48px;
+    }
+    .group__head {
+      grid-template-columns: auto 1fr;
+    }
+    .group__head .lede {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+  @media (max-width: 860px) {
+    .service {
+      grid-template-columns: 1fr;
+    }
+    .service.is-flipped .service__photo {
+      order: 0;
+    }
+    .service__photo {
+      aspect-ratio: 4 / 3;
+    }
+  }
+  @media (max-width: 560px) {
+    .service-index,
+    .process__steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  eager?: boolean;
+  reveal?: boolean;
+}
+const { src, alt, class: className, eager = false, reveal = true } = Astro.props;
+---
+
+<div class:list={['media', className]} data-reveal={reveal ? 'mask' : undefined}>
+  <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" data-photo />
+  <slot />
+</div>

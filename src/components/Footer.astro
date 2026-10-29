@@ -1,0 +1,151 @@
+---
+import Icon from './Icon.astro';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__cta">
+      <p class="statement">
+        We don’t discriminate.<br />We simply have <em>extraordinary standards.</em>
+      </p>
+      <a href="/apply/" class="btn btn--light">Request an invitation <Icon name="arrow" /></a>
+    </div>
+
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <span class="footer__wordmark">Casaguapo</span>
+        <p>
+          A private technology and lifestyle concierge for a very small number of very remarkable people.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="footer__title">Services</h3>
+        <ul>
+          <li><a href="/services/#technology">Private Technology</a></li>
+          <li><a href="/services/#lifestyle">Beauty &amp; Lifestyle</a></li>
+          <li><a href="/services/#friends">Friends for Hire</a></li>
+          <li><a href="/services/#process">Engagement</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer__title">The House</h3>
+        <ul>
+          <li><a href="/membership/">Membership</a></li>
+          <li><a href="/apply/">Apply</a></li>
+          <li><a href="/membership/#faq">Questions</a></li>
+          <li><a href="/#house">Principles</a></li>
+          <li><a href="/system/">Brand standards</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer__title">Residences</h3>
+        <ul class="footer__plain">
+          <li>Geneva</li>
+          <li>Monaco</li>
+          <li>London, Mayfair</li>
+          <li>A fourth location, disclosed upon approval</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__base">
+      <p>© {year} Casaguapo. All rights reserved, particularly the right of refusal.</p>
+      <p>Casaguapo is a work of satire. Our standards, however, are entirely real.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--stone-900);
+    color: var(--surface);
+    padding-top: clamp(80px, 10vw, 140px);
+    padding-bottom: 40px;
+  }
+  .footer__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    padding-bottom: clamp(64px, 8vw, 112px);
+    border-bottom: 1px solid var(--border-inverse);
+  }
+  .footer__cta .statement {
+    max-width: 16em;
+  }
+  .footer__cta em {
+    color: var(--accent-soft);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.3fr;
+    gap: 48px;
+    padding-block: 64px;
+  }
+  .footer__wordmark {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .footer__brand p {
+    margin: 16px 0 0;
+    max-width: 22em;
+    color: var(--stone-400);
+    font-size: 14.5px;
+  }
+  .footer__title {
+    margin: 0 0 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    color: var(--accent-soft);
+  }
+  .footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 14.5px;
+  }
+  .footer ul a {
+    color: rgba(249, 246, 239, 0.78);
+    transition: color 0.3s;
+  }
+  .footer ul a:hover {
+    color: var(--surface);
+  }
+  .footer__plain li {
+    color: rgba(249, 246, 239, 0.6);
+  }
+  .footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-inverse);
+    font-size: 12.5px;
+    color: var(--stone-400);
+  }
+  .footer__base p {
+    margin: 0;
+  }
+  @media (max-width: 860px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

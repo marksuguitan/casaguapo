@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base title="Not found">
+  <section class="page-hero nf">
+    <div class="container stack" style="--stack:28px">
+      <p class="eyebrow">Error 404</p>
+      <h1 class="h1">This page is <em>members only.</em></h1>
+      <p class="lede">Or it does not exist. For reasons of discretion, we are unable to say which.</p>
+      <div><a href="/" class="btn">Return to the House <Icon name="arrow" /></a></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 80vh;
+    border-bottom: 0;
+  }
+</style>

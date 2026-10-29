@@ -1,0 +1,144 @@
+/*
+ * Casaguapo design tokens.
+ * One accent (Amber, built around #E69B00), warm neutrals, Manrope for display and Inter for text.
+ * Components read the semantic tokens (surface, text, border, accent-*) rather than raw scale values.
+ * The /system/ page renders every token below.
+ */
+
+:root {
+  /* ---------- Accent: Amber ---------- */
+  --amber-50: #fff8e8;
+  --amber-100: #ffeec7;
+  --amber-200: #ffdc8f;
+  --amber-300: #fcc652;
+  --amber-400: #f4b024;
+  --amber-500: #e69b00; /* brand */
+  --amber-600: #c27f00;
+  --amber-700: #9a6400;
+  --amber-800: #744b04;
+  --amber-900: #4b3106;
+  --amber-rgb: 230, 155, 0;
+
+  /* ---------- Neutrals: warm stone ---------- */
+  --stone-0: #ffffff;
+  --stone-25: #fffdf8;
+  --stone-50: #f9f6ef; /* ivory */
+  --stone-100: #f2ece0; /* cream */
+  --stone-200: #e6ddcd;
+  --stone-300: #d2c7b4;
+  --stone-400: #aaa092;
+  --stone-500: #7c746a;
+  --stone-600: #5e574f;
+  --stone-700: #3d3934;
+  --stone-800: #262420;
+  --stone-900: #171512;
+  --stone-950: #0e0d0b;
+  --ink-rgb: 23, 21, 18;
+
+  /* ---------- Semantic colour ---------- */
+  --surface: var(--stone-50);
+  --surface-sunken: var(--stone-100);
+  --surface-raised: var(--stone-25);
+  --surface-card: var(--stone-0);
+  --surface-inverse: var(--stone-900);
+  --surface-inverse-raised: var(--stone-800);
+
+  --text: var(--stone-900);
+  --text-secondary: var(--stone-600);
+  --text-tertiary: var(--stone-400);
+  --text-inverse: var(--stone-50);
+  --text-inverse-secondary: rgba(249, 246, 239, 0.66);
+
+  --border: rgba(var(--ink-rgb), 0.1);
+  --border-strong: rgba(var(--ink-rgb), 0.2);
+  --border-inverse: rgba(249, 246, 239, 0.14);
+
+  --accent: var(--amber-500); /* fills, rules, icons, focus */
+  --accent-hover: var(--amber-400);
+  --accent-text: var(--amber-700); /* accent text on light surfaces, AA */
+  --accent-soft: var(--amber-400); /* accent text on dark surfaces */
+  --accent-wash: var(--amber-50);
+  --accent-ring: rgba(var(--amber-rgb), 0.22);
+  --on-accent: var(--stone-900);
+
+  --success: #3f7a52;
+  --danger: #a4452f;
+  --danger-wash: #fbece8;
+
+  /* ---------- Typography ---------- */
+  --font-display: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-2xs: 10.5px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: clamp(17px, 1.3vw, 19px);
+  --text-xl: clamp(20px, 1.8vw, 24px);
+  --text-2xl: clamp(26px, 2.6vw, 34px);
+  --text-3xl: clamp(32px, 3.8vw, 52px);
+  --text-4xl: clamp(38px, 5vw, 68px);
+  --text-5xl: clamp(40px, 5.6vw, 84px);
+  --text-display: clamp(48px, 8.2vw, 124px);
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.02;
+  --leading-snug: 1.15;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.72;
+
+  --tracking-display: -0.045em;
+  --tracking-heading: -0.03em;
+  --tracking-body: -0.006em;
+  --tracking-label: 0.16em;
+  --tracking-eyebrow: 0.22em;
+
+  /* ---------- Space (4px base) ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-section: clamp(88px, 12vw, 168px);
+  --gutter: clamp(20px, 5vw, 64px);
+  --max: 1320px;
+
+  /* ---------- Radius ---------- */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius: 18px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* ---------- Elevation ---------- */
+  --shadow-sm: 0 1px 2px rgba(var(--ink-rgb), 0.04), 0 4px 12px rgba(var(--ink-rgb), 0.04);
+  --shadow: 0 2px 4px rgba(var(--ink-rgb), 0.03), 0 18px 40px -12px rgba(var(--ink-rgb), 0.14);
+  --shadow-lg: 0 4px 8px rgba(var(--ink-rgb), 0.04), 0 40px 80px -24px rgba(var(--ink-rgb), 0.28);
+  --shadow-accent: 0 14px 34px -14px rgba(var(--amber-rgb), 0.7);
+
+  /* ---------- Motion ---------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 0.25s;
+  --duration: 0.5s;
+  --duration-slow: 0.9s;
+  --duration-reveal: 1.2s;
+
+  /* ---------- Layers ---------- */
+  --z-header: 50;
+  --z-concierge: 60;
+  --z-skip: 100;
+  --header-h: 84px;
+}

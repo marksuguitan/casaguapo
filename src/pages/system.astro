@@ -1,0 +1,448 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+
+const amber = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
+const stone = ['0', '25', '50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
+const semantic = [
+  ['--surface', 'Page'],
+  ['--surface-sunken', 'Sunken section'],
+  ['--surface-raised', 'Raised panel'],
+  ['--surface-inverse', 'Inverse'],
+  ['--text', 'Text'],
+  ['--text-secondary', 'Secondary text'],
+  ['--accent', 'Accent'],
+  ['--accent-text', 'Accent text'],
+  ['--danger', 'Danger'],
+];
+const type = [
+  ['--text-display', 'Display', 'Exceptional.'],
+  ['--text-5xl', 'Heading 1', 'For exceptional people.'],
+  ['--text-4xl', 'Heading 2', 'No exceptions.'],
+  ['--text-3xl', 'Statement', 'We simply have standards.'],
+  ['--text-2xl', 'Heading 3', 'Private Email Hosting'],
+  ['--text-xl', 'Large', 'Membership is a privilege.'],
+  ['--text-lg', 'Lede', 'Casaguapo provides private infrastructure to remarkable people.'],
+  ['--text-base', 'Body', 'Reply-all permanently disabled, for your protection.'],
+  ['--text-sm', 'Small', 'Annual billing is available. It is not cheaper.'],
+  ['--text-xs', 'Label', 'REQUEST AN INVITATION'],
+];
+const space = ['1', '2', '3', '4', '6', '8', '12', '16', '24'];
+const radii = ['--radius-xs', '--radius-sm', '--radius-md', '--radius', '--radius-lg', '--radius-pill'];
+const shadows = ['--shadow-sm', '--shadow', '--shadow-lg', '--shadow-accent'];
+---
+
+<Base title="Brand standards" description="The Casaguapo design system.">
+  <section class="page-hero">
+    <div class="container page-hero__grid">
+      <div class="stack" style="--stack:28px">
+        <p class="eyebrow">Brand standards</p>
+        <h1 class="h1">A design system for <em>exceptional</em> taste.</h1>
+      </div>
+      <p class="lede">
+        One accent, warm neutrals and two typefaces. Every page of the House is built from the tokens below, which are
+        defined in <code>src/styles/tokens.css</code>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section ds">
+    <div class="container ds__stack">
+      <!-- Colour -->
+      <div class="ds__block">
+        <header class="ds__head">
+          <p class="eyebrow">Colour</p>
+          <h2 class="h2">Amber</h2>
+          <p class="lede">Built around <strong>#E69B00</strong>. Use 500 for fills, rules and icons, 700 for accent text on light surfaces, and 400 on dark.</p>
+        </header>
+        <div class="swatches">
+          {
+            amber.map((k) => (
+              <div class:list={['swatch', { 'is-brand': k === '500' }]}>
+                <span class="swatch__chip" style={`background: var(--amber-${k})`} />
+                <span class="swatch__name">Amber {k}</span>
+                <span class="swatch__token">--amber-{k}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="ds__block">
+        <header class="ds__head">
+          <h3 class="h3">Stone</h3>
+          <p class="lede">Warm neutrals for surfaces and text. Never pure grey; nothing here is ordinary.</p>
+        </header>
+        <div class="swatches swatches--dense">
+          {
+            stone.map((k) => (
+              <div class="swatch">
+                <span class="swatch__chip" style={`background: var(--stone-${k})`} />
+                <span class="swatch__name">Stone {k}</span>
+                <span class="swatch__token">--stone-{k}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="ds__block">
+        <header class="ds__head">
+          <h3 class="h3">Semantic</h3>
+          <p class="lede">Components use these roles, not raw scale values.</p>
+        </header>
+        <div class="swatches swatches--dense">
+          {
+            semantic.map(([token, name]) => (
+              <div class="swatch">
+                <span class="swatch__chip" style={`background: var(${token})`} />
+                <span class="swatch__name">{name}</span>
+                <span class="swatch__token">{token}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Type -->
+      <div class="ds__block">
+        <header class="ds__head">
+          <p class="eyebrow">Typography</p>
+          <h2 class="h2">Manrope &amp; Inter</h2>
+          <p class="lede">Manrope sets headlines, labels and buttons, tightly tracked. Inter carries everything people read at length.</p>
+        </header>
+        <div class="type-scale">
+          {
+            type.map(([token, name, sample], i) => (
+              <div class="type-row">
+                <div class="type-row__meta">
+                  <span class="swatch__name">{name}</span>
+                  <span class="swatch__token">{token}</span>
+                </div>
+                <p
+                  class:list={['type-row__sample', i < 5 ? 'is-display' : i === 9 ? 'is-label' : 'is-body']}
+                  style={`font-size: var(${token})`}
+                >
+                  {sample}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Space, radius, elevation -->
+      <div class="ds__block ds__grid3">
+        <div>
+          <h3 class="h3">Space</h3>
+          <p class="fine">4px base.</p>
+          <div class="spaces">
+            {
+              space.map((k) => (
+                <div class="space">
+                  <span class="space__bar" style={`width: var(--space-${k})`} />
+                  <span class="swatch__token">--space-{k}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <h3 class="h3">Radius</h3>
+          <p class="fine">Soft, never bubbly.</p>
+          <div class="radii">
+            {
+              radii.map((r) => (
+                <div class="radius">
+                  <span class="radius__box" style={`border-radius: var(${r})`} />
+                  <span class="swatch__token">{r}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <h3 class="h3">Elevation</h3>
+          <p class="fine">Shadows are felt rather than seen.</p>
+          <div class="radii">
+            {
+              shadows.map((s) => (
+                <div class="radius">
+                  <span class="radius__box radius__box--card" style={`box-shadow: var(${s})`} />
+                  <span class="swatch__token">{s}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Components -->
+      <div class="ds__block">
+        <header class="ds__head">
+          <p class="eyebrow">Components</p>
+          <h2 class="h2">The fittings</h2>
+        </header>
+        <div class="components">
+          <div class="component">
+            <p class="swatch__name">Buttons</p>
+            <div class="component__row">
+              <a class="btn" href="#">Primary <Icon name="arrow" /></a>
+              <a class="btn btn--accent" href="#">Accent <Icon name="arrow" /></a>
+              <a class="btn btn--ghost" href="#">Ghost</a>
+            </div>
+          </div>
+          <div class="component component--dark">
+            <p class="swatch__name">On dark</p>
+            <div class="component__row">
+              <a class="btn btn--light" href="#">Light <Icon name="arrow" /></a>
+              <a class="btn btn--ghost-light" href="#">Ghost light</a>
+            </div>
+          </div>
+          <div class="component">
+            <p class="swatch__name">Eyebrow &amp; link</p>
+            <div class="component__col">
+              <p class="eyebrow">The House</p>
+              <a class="link-arrow" href="#">Discover the services <Icon name="arrow" /></a>
+            </div>
+          </div>
+          <div class="component">
+            <p class="swatch__name">Field</p>
+            <label class="ds-field">
+              <span>Approximate net worth</span>
+              <input placeholder="Round up" />
+            </label>
+          </div>
+          <div class="component">
+            <p class="swatch__name">Icon</p>
+            <div class="component__row icons">
+              {
+                ['mail', 'database', 'globe', 'shield', 'sparkle', 'assistant', 'friends', 'concierge', 'crown', 'diamond', 'key', 'lock'].map((n) => (
+                  <span class="icon-tile">
+                    <Icon name={n} size={22} />
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+          <div class="component">
+            <p class="swatch__name">Motion</p>
+            <p class="fine">
+              Ease <code>--ease</code> for everything that arrives. Durations: <code>--duration-fast</code> 0.25s,
+              <code>--duration</code> 0.5s, <code>--duration-slow</code> 0.9s, reveals 1.2s. Respect reduced motion.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ds__stack {
+    display: grid;
+    gap: clamp(72px, 9vw, 128px);
+  }
+  .ds__head {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+  }
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.88em;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    background: var(--surface-sunken);
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-4);
+  }
+  .swatches--dense {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .swatch {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .swatch__chip {
+    display: block;
+    height: 96px;
+    margin-bottom: var(--space-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+  }
+  .swatch.is-brand .swatch__chip {
+    box-shadow: var(--shadow-accent);
+  }
+  .swatch__name {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-sm);
+  }
+  .swatch__token {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
+
+  .type-scale {
+    border-top: 1px solid var(--border);
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: var(--space-6);
+    align-items: baseline;
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--border);
+  }
+  .type-row__meta {
+    display: grid;
+    gap: 2px;
+  }
+  .type-row__sample {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .type-row__sample.is-display {
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.05;
+  }
+  .type-row__sample.is-label {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-label);
+  }
+
+  .ds__grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-12);
+  }
+  .ds__grid3 .h3 {
+    margin-bottom: var(--space-1);
+  }
+  .spaces,
+  .radii {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .space {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .space__bar {
+    display: block;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .radii {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+  .radius {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .radius__box {
+    display: block;
+    height: 64px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-raised);
+  }
+  .radius__box--card {
+    border-radius: var(--radius);
+    border-color: var(--border);
+    background: var(--surface-card);
+  }
+
+  .components {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  .component {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+  }
+  .component--dark {
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
+    border-color: var(--surface-inverse);
+  }
+  .component__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .component__col {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .ds-field {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .ds-field span {
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  .ds-field input {
+    padding: 15px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    outline: none;
+    transition:
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
+  }
+  .ds-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-ring);
+  }
+  .icon-tile {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(var(--amber-rgb), 0.45);
+    color: var(--accent-text);
+    background: var(--accent-wash);
+  }
+
+  @media (max-width: 960px) {
+    .swatches {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ds__grid3,
+    .components {
+      grid-template-columns: 1fr;
+    }
+    .type-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>
