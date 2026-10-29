@@ -14,20 +14,22 @@ const addresses = [
   'Simply my first name, as with other icons',
 ];
 const wealth = [
-  'Under $50 million (please reconsider)',
+  'Under $50 million (is that legal?)',
   '$50 million – $500 million',
   '$500 million – $5 billion',
   'We stopped counting',
   'It is held in trust by a small nation',
+  'I have never asked',
 ];
 const beauty = ['Striking', 'Breathtaking', 'Historically significant', 'Others have had to sit down'];
-const residences = ['One (temporarily)', 'Two to four', 'Five to twelve', 'One per season, per hemisphere'];
+const residences = ['One (how cosy)', 'Two to four', 'Five to twelve', 'One per season, per hemisphere', 'I lose count, and occasionally a house'];
 const services = [...technologyServices, ...lifestyleServices];
 
 const criteria = [
   'You are exceptionally attractive, by consensus rather than self-report alone.',
   'Your net worth is customarily described in words rather than numbers.',
   'You have never once used the phrase “value for money” sincerely.',
+  'You believe a “commute” is a type of pastry.',
 ];
 ---
 
@@ -40,7 +42,7 @@ const criteria = [
           <h1 class="h1" data-reveal style="--d:.08s">An invitation to be <em>considered.</em></h1>
           <p class="lede" data-reveal style="--d:.16s">
             Casaguapo does not accept members. It recognises them. The following questionnaire assists the Committee
-            in recognising you.
+            in recognising you, and, in most cases, in recognising that it has made a mistake by opening the form.
           </p>
         </div>
 
@@ -78,7 +80,7 @@ const criteria = [
           <fieldset class="step" data-step="0">
             <legend class="step__legend">
               <span class="h3">Introductions</span>
-              <span class="step__hint">We prefer to know whom we are declining.</span>
+              <span class="step__hint">We prefer to know whom we are declining. It makes the letter more personal.</span>
             </legend>
 
             <div class="fields">
@@ -103,7 +105,7 @@ const criteria = [
                   type="email"
                   autocomplete="email"
                   required
-                  placeholder="Not one shared with an employer"
+                  placeholder="Not one shared with an employer. You don’t have an employer, do you?"
                 />
                 <p class="field__error">This address does not appear to be in order.</p>
               </div>
@@ -149,7 +151,7 @@ const criteria = [
                   <option value="" disabled selected>Select</option>
                   {wealth.map((w) => <option>{w}</option>)}
                 </select>
-                <p class="field__error">An estimate will do. Round up.</p>
+                <p class="field__error">An estimate will do. Round up. Then up again, we’ll wait.</p>
               </div>
               <div class="field">
                 <label for="residences">Residences</label>
@@ -157,7 +159,7 @@ const criteria = [
                   <option value="" disabled selected>Select</option>
                   {residences.map((r) => <option>{r}</option>)}
                 </select>
-                <p class="field__error">Please include the ones you rarely visit.</p>
+                <p class="field__error">Please include the ones you have forgotten about. Your accountant has not.</p>
               </div>
             </div>
 
@@ -181,7 +183,7 @@ const criteria = [
           <fieldset class="step" data-step="2" hidden>
             <legend class="step__legend">
               <span class="h3">Services of interest</span>
-              <span class="step__hint">Select all that apply. Members typically select all.</span>
+              <span class="step__hint">Select all that apply. Members typically select all, then ask whether there are more.</span>
             </legend>
             <div class="service-picks">
               {
@@ -203,7 +205,7 @@ const criteria = [
               }
             </div>
             <p class="field__error field__error--group" data-services-error>
-              Please select at least one. We are, after all, a service.
+              Please select at least one. We are, after all, a service, which is a word our members use for other people.
             </p>
           </fieldset>
 
@@ -877,6 +879,8 @@ const criteria = [
     'Consulting the Committee…',
     'Comparing against existing members…',
     'Locating your yacht…',
+    'Still locating your yacht…',
+    'Asking whether a rowing boat counts…',
     'Composing a response…',
   ];
 

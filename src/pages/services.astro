@@ -10,7 +10,7 @@ const groups: { id: string; numeral: string; title: string; intro: string; servi
     numeral: 'I.',
     title: 'Private Technology',
     intro:
-      'Infrastructure built, operated and guarded exclusively for our members. No shared servers, no shared inboxes, and no shared anything with anyone you have not personally approved.',
+      'Infrastructure built, operated and guarded exclusively for our members. No shared servers, no shared inboxes, and no sharing of any kind, a habit our members gave up in nursery school and have never once missed.',
     services: technologyServices,
   },
   {
@@ -18,7 +18,7 @@ const groups: { id: string; numeral: string; title: string; intro: string; servi
     numeral: 'II.',
     title: 'Beauty & Lifestyle',
     intro:
-      'For the hours that remain once your technology has been perfected. Our lifestyle team manages appearance, logistics and companionship with the same discretion as our engineers manage your data.',
+      'For the long, empty hours that remain once your technology has been perfected. Our lifestyle team manages appearance, logistics and companionship, so that nothing about your life is ever left to chance, effort or people who love you.',
     services: lifestyleServices,
   },
 ];
@@ -27,22 +27,22 @@ const steps = [
   {
     n: '01',
     title: 'Application',
-    body: 'You submit a brief questionnaire. Most applicants find it straightforward. Most applicants are declined.',
+    body: 'You submit a brief questionnaire. Most applicants find it straightforward. Most applicants are declined, and some of them never quite recover.',
   },
   {
     n: '02',
     title: 'Assessment',
-    body: 'Our committee conducts an aesthetic, financial and entirely arbitrary review. Proceedings are confidential, including from the committee.',
+    body: 'Our Committee conducts an aesthetic, financial and entirely arbitrary review. Proceedings are confidential, including from the Committee, who are informed of their decisions by letter.',
   },
   {
     n: '03',
     title: 'Introduction',
-    body: 'Successful applicants are welcomed in person, at a location chosen for its lighting, by a director chosen for theirs.',
+    body: 'Successful applicants are welcomed in person, at a location chosen for its lighting, by a director chosen for theirs. Unsuccessful applicants are also welcomed, to try again in seven years.',
   },
   {
     n: '04',
     title: 'Ongoing excellence',
-    body: 'Your dedicated team assumes responsibility for everything you would prefer not to think about, beginning immediately and continuing indefinitely.',
+    body: 'Your dedicated team assumes responsibility for everything you would prefer not to think about, beginning immediately and continuing, per the contract, for some time after your death.',
   },
 ];
 ---
@@ -58,7 +58,7 @@ const steps = [
       </div>
       <p class="lede" data-reveal style="--d:.16s">
         Eight services, each available only to members, each delivered with a level of care that most people will
-        never experience and, frankly, would not know what to do with.
+        never experience and, frankly, would only cry about. You may read about them. Reading is free. For now.
       </p>
     </div>
     <nav class="container service-index" aria-label="Service index" data-reveal style="--d:.24s">
@@ -105,6 +105,10 @@ const steps = [
                     ))}
                   </ul>
                   <p class="service__note" data-reveal style="--d:.24s">{s.note}</p>
+                  <figure class="service__quote" data-reveal style="--d:.3s">
+                    <blockquote>“{s.testimonial.quote}”</blockquote>
+                    <figcaption>{s.testimonial.who}</figcaption>
+                  </figure>
                 </div>
               </article>
             ))}
@@ -271,6 +275,28 @@ const steps = [
     color: var(--stone-700);
     padding-left: 20px;
     border-left: 1px solid var(--accent);
+  }
+
+  .service__quote {
+    margin: 24px 0 0;
+    padding: 20px 22px;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+  .service__quote blockquote {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+  .service__quote figcaption {
+    margin-top: 10px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--text-secondary);
   }
 
   .process__head {

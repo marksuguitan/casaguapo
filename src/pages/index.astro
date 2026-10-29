@@ -5,35 +5,62 @@ import Photo from '../components/Photo.astro';
 import { images, technologyServices, lifestyleServices, tiers, formatPrice } from '../data/site';
 
 const clientele = [
-  'Three reigning monarchies',
+  'Three reigning monarchies and one recently former',
   'Two of the four most photographed jawlines in Monaco',
   'A gentleman who owns the concept of brunch',
   'Several heirs, one of them to a colour',
-  'The person you are thinking of',
+  'A widow on her fourth, most successful marriage',
+  'The person you are thinking of. Not that one. The rich one.',
 ];
 
 const stats = [
   { value: '11', label: 'Members admitted in 2025' },
-  { value: '4,112', label: 'Applications declined, with regret' },
-  { value: '0', label: 'Servers shared with anyone' },
-  { value: '24/7', label: 'Admiration, on request' },
+  { value: '4,112', label: 'Applications declined, without regret' },
+  { value: '0', label: 'Members who have ever seen a price tag' },
+  { value: '3', label: 'Former members we no longer discuss' },
 ];
 
 const principles = [
   {
     icon: 'lock',
     title: 'Discretion',
-    body: 'We believe privacy is a fundamental right. Membership, however, is a privilege. Our clients’ names are known only to us, their families, and in most cases the international press.',
+    body: 'We believe privacy is a fundamental right. Membership, however, is a privilege. Our clients’ names are known only to us, their families, their former families, and in most cases the international press.',
   },
   {
     icon: 'diamond',
     title: 'Standards',
-    body: 'Each prospective member is assessed on aesthetic, financial and entirely arbitrary grounds. We have never lowered our standards. We have, on occasion, raised them mid-interview.',
+    body: 'Each prospective member is assessed on aesthetic, financial and entirely arbitrary grounds. We have never lowered our standards. We have raised them mid-interview, and once mid-sentence, when the applicant said “budget”.',
   },
   {
     icon: 'key',
     title: 'Infrastructure',
-    body: 'Because ordinary infrastructure is for ordinary people. Every system we operate is private, dedicated and maintained by engineers chosen, in part, for how they look in a server room.',
+    body: 'Because ordinary infrastructure is for ordinary people, and we have met ordinary people. Every system we operate is private, dedicated and maintained by engineers chosen, in part, for how they look in a server room.',
+  },
+];
+const overheard = [
+  {
+    quote: 'Someone told me there are people who have never been to Monaco. I said, “What, ever?” They said yes. I had to lie down.',
+    who: 'A Member since 2014, Monaco',
+  },
+  {
+    quote: 'I asked my driver what he does at weekends. He said “laundry”. I had no idea you could do that yourself. Very brave.',
+    who: 'A Member, Ultra-Super tier',
+  },
+  {
+    quote: 'I went into a supermarket once, for charity. Nobody carried anything for me. I left the grapes where they were. I hope someone poor found them.',
+    who: 'A Member, Gstaad',
+  },
+  {
+    quote: 'My children say I’m emotionally unavailable. My assistant says I’m “booked through spring”. I prefer my assistant.',
+    who: 'A Member since 2018, Mayfair',
+  },
+  {
+    quote: 'I asked whether my staff were happy. They said that wasn’t a service they offer. I respect that enormously.',
+    who: 'A Member, Lake Como',
+  },
+  {
+    quote: 'I looked at the $10,000 membership once, the way you look at a car accident.',
+    who: 'A Member, Ultra-Super tier',
   },
 ];
 ---
@@ -91,12 +118,12 @@ const principles = [
         </h2>
         <div class="intro__text" data-reveal style="--d:.16s">
           <p class="lede">
-            Founded on the observation that the most beautiful people in the world were using the same email providers
-            as everyone else, Casaguapo was established to correct an imbalance few were brave enough to name.
+            Casaguapo was founded in 2009, when our founder discovered that she was using the same email provider as her
+            gardener. She has not recovered. Neither, we understand, has the gardener.
           </p>
           <p class="lede">
             Today we manage the private technology, daily logistics and continued radiance of a membership we describe,
-            accurately, as the finest in existence.
+            accurately, as the finest in existence, and, less publicly, as the only people we can stand.
           </p>
         </div>
         <a href="/services/" class="link-arrow" data-reveal style="--d:.24s">Discover the services <Icon name="arrow" /></a>
@@ -104,7 +131,7 @@ const principles = [
       <div class="intro__media">
         <Photo src={images.interior} alt="A serene, light-filled private residence" class="intro__photo-a" />
         <Photo src={images.portraitWomanTwo} alt="Portrait of a member, name withheld" class="intro__photo-b media--warm" />
-        <p class="intro__caption fine">A member, photographed at rest. Name withheld for reasons of beauty.</p>
+        <p class="intro__caption fine">A member, photographed at rest. She has not been told about the recession, and we would ask that you not tell her.</p>
       </div>
     </div>
   </section>
@@ -123,7 +150,7 @@ const principles = [
           <div class="pillar__body">
             <p class="pillar__index">I.</p>
             <h3 class="h3">Private Technology</h3>
-            <p>Your data deserves the same exclusivity as your social circle.</p>
+            <p>Your data deserves the same exclusivity as your social circle. Ideally, more.</p>
             <ul class="pillar__list">
               {
                 technologyServices.map((s) => (
@@ -142,7 +169,7 @@ const principles = [
           <div class="pillar__body">
             <p class="pillar__index">II.</p>
             <h3 class="h3">Beauty &amp; Lifestyle</h3>
-            <p>For those who refuse to accept perfection as a stopping point.</p>
+            <p>For those who refuse to accept perfection as a stopping point, or ageing as a concept.</p>
             <ul class="pillar__list">
               {
                 lifestyleServices.map((s) => (
@@ -180,7 +207,7 @@ const principles = [
       <figure class="testimonial__quote">
         <p class="eyebrow">In confidence</p>
         <blockquote data-reveal>
-          “My previous email provider allowed <em>anyone</em> to write to me. Casaguapo has corrected this.”
+          “My previous email provider allowed <em>anyone</em> to write to me. Including, once, a man named Gary. Casaguapo has corrected this, and Gary.”
         </blockquote>
         <figcaption data-reveal style="--d:.12s">
           <span>A Member since 2019</span>
@@ -209,6 +236,27 @@ const principles = [
               <h3 class="h3">{p.title}</h3>
               <p>{p.body}</p>
             </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Overheard -->
+  <section class="section section--dark overheard">
+    <div class="container">
+      <div class="overheard__head">
+        <p class="eyebrow" data-reveal>Overheard in the members’ lounge</p>
+        <h2 class="h2" data-reveal style="--d:.08s">Our members, in their own <em>words.</em></h2>
+        <p class="fine" data-reveal style="--d:.12s">Reproduced with permission. Names withheld at the request of their lawyers, and in one case his mother, who still thinks he works in shipping.</p>
+      </div>
+      <div class="overheard__grid">
+        {
+          overheard.map((o, i) => (
+            <figure class="quote-card" data-reveal style={`--d:${(i % 3) * 0.08}s`}>
+              <blockquote>“{o.quote}”</blockquote>
+              <figcaption>{o.who}</figcaption>
+            </figure>
           ))
         }
       </div>
@@ -254,9 +302,9 @@ const principles = [
       <h2 class="h1" data-reveal style="--d:.08s">
         Your friends should be as carefully selected as your <em>investments.</em>
       </h2>
-      <p class="closing__text" data-reveal style="--d:.16s">So, regrettably, should our members.</p>
+      <p class="closing__text" data-reveal style="--d:.16s">So, regrettably, should our members. You may still apply. We could all use the laugh.</p>
       <div data-reveal style="--d:.24s">
-        <a href="/apply/" class="btn btn--light">Begin your application <Icon name="arrow" /></a>
+        <a href="/apply/" class="btn btn--light">Apply, for the experience <Icon name="arrow" /></a>
       </div>
     </div>
   </section>
@@ -607,6 +655,57 @@ const principles = [
   }
 
   /* Principles */
+  .overheard__head {
+    display: grid;
+    gap: 18px;
+    max-width: 44rem;
+    margin-bottom: clamp(48px, 6vw, 80px);
+  }
+  .overheard__head .fine {
+    color: var(--text-inverse-secondary);
+  }
+  .overheard__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .quote-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 32px 28px;
+    border-radius: var(--radius);
+    background: var(--surface-inverse-raised);
+    border: 1px solid var(--border-inverse);
+  }
+  .quote-card blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 19px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    color: var(--text-inverse);
+  }
+  .quote-card figcaption {
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-soft);
+  }
+  @media (max-width: 1024px) {
+    .overheard__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 640px) {
+    .overheard__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .principles__head {
     display: grid;
     gap: 24px;
