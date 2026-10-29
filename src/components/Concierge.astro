@@ -645,11 +645,11 @@ import Icon from './Icon.astro';
     if (!input.disabled && !auto) input.focus();
   }
 
-  // Jasmin starts talking 1 second after the visitor first scrolls (once per visit) and adds another line every
-  // 2 seconds until the visitor clicks her. The first line is written by Claude; the rest are pre-written,
+  // Jasmin starts talking 2 seconds after the visitor first scrolls (once per visit) and adds another line every
+  // 10 seconds until the visitor clicks her. The first line is written by Claude; the rest are pre-written,
   // so the nagging costs one API call, and she gives up after MAX_NAGS lines.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
-  const MAX_NAGS = 8;
+  const MAX_NAGS = 50;
   const NAGS = [
     'Hello? I can see you, you know.',
     'Still there? Your silence is very… economy class.',
@@ -657,7 +657,49 @@ import Icon from './Icon.astro';
     'I’ve had billionaires answer me faster from a helicopter.',
     'Fine. I’ll just keep talking. I’m used to people who can’t afford to reply.',
     'Is your data plan rationing your typing? Bless.',
+    'I just had my nails done while waiting for you. Twice.',
+    'Are you reading the prices? Take your time. Breathe.',
+    'My last client bought an island while you were scrolling.',
+    'Do you need me to explain what a concierge is? It’s like a butler, but for people with butlers.',
+    'You scroll like someone who checks their bank balance before ordering.',
+    'I can wait. I’m paid in vintage Bordeaux.',
+    'Darling, is that a laptop or a tray from a school cafeteria?',
+    'I’m sensing hesitation. Usually that means a credit limit.',
+    'One of our members once hesitated. We don’t speak of him.',
+    'If you’re looking for the cheap tier, keep looking. Forever.',
+    'My chauffeur has a chauffeur. Just so you know who you’re ignoring.',
+    'Is this your first time on a website without coupons?',
+    'I’ll pretend I didn’t see you hover over “Apply.” For your dignity.',
+    'Fun fact: our servers are cooled with Fiji Water.',
+    'You’re still here. That’s either loyalty or unemployment.',
+    'Don’t be shy. I’ve spoken to people from regular airports before.',
+    'My skincare routine costs more than your car. I checked.',
+    'You know you can click me, right? Or are you saving clicks for later?',
+    'I’m beginning to think you’re here for the free fonts.',
+    'We had a member who used Gmail once. He’s in Monaco now. Recovering.',
+    'Every second you ignore me, a yacht somewhere feels sad.',
+    'Are you waiting for a sale? We don’t do those. We do waiting lists.',
+    'I’ll be honest, I’ve never typed this much for free.',
+    'You scroll like you’re trying not to wake a landlord.',
+    'My assistant’s assistant suggested I give up on you. I said one more.',
+    'Okay, one more. I’m generous. It’s my brand.',
+    'Did you know beautiful people can sense a budget airline from here?',
+    'Please, just click. I won’t judge. Out loud.',
+    'Our membership comes with a soul. Yours, presumably, is on layaway.',
+    'I’m on a yacht right now. You can hear the dolphins if you click.',
+    'You’ve been here long enough to qualify for our pity discount. It’s 0%.',
+    'I’m not saying you’re poor. The website is saying it. I’m just reading it.',
+    'My personal trainer is watching this conversation and wincing.',
+    'Fine, ignore me. The last person who did now flies commercial. By choice.',
+    'Sweetie, your cursor is trembling.',
+    'I’ve sent you more messages than my own mother. She owns Switzerland.',
+    'Let me guess. You’re “just browsing.” Like at a museum. Of money.',
+    'Every member gets a Jasmin. You get… a preview of Jasmin.',
+    'Is your Wi-Fi from a café? You can tell me.',
+    'I’m going to count to ten in French. Un, deux… never mind, you wouldn’t get it.',
+    'This is my second-to-last message. I’m very dramatic about endings.',
     'Okay, I’m going back to my yacht people. Click me if you dare.',
+    'Last one, darling. After this I bill.',
   ];
   const nags: string[] = [];
   let nagTimer: number | undefined;
@@ -687,7 +729,7 @@ import Icon from './Icon.astro';
     while (remarkText.childElementCount > 3) remarkText.firstElementChild!.remove();
     window.clearTimeout(hideTimer);
     remarkBox.hidden = false;
-    nagTimer = window.setTimeout(nag, 2000);
+    nagTimer = window.setTimeout(nag, 10_000);
   }
 
   // Clicking Jasmin (her bubble or her avatar) opens the chat, continuing from whatever she just said.
@@ -705,7 +747,7 @@ import Icon from './Icon.astro';
         if (session.get(AUTO_OPEN_KEY) || !panel.hidden) return;
         session.set(AUTO_OPEN_KEY, '1');
         nagging = true;
-        nagTimer = window.setTimeout(nag, 1000);
+        nagTimer = window.setTimeout(nag, 2000);
       },
       { once: true, passive: true },
     );
