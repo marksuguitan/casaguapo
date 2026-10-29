@@ -4,13 +4,14 @@ import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import { images, technologyServices, lifestyleServices, tiers, formatPrice } from '../data/site';
 
-const clientele = [
-  'Three reigning monarchies and one recently former',
-  'Two of the four most photographed jawlines in Monaco',
-  'A gentleman who owns the concept of brunch',
-  'Several heirs, one of them to a colour',
-  'A widow on her fourth, most successful marriage',
-  'The person you are thinking of. Not that one. The rich one.',
+// Fictional publications, all of them owned by members.
+const press = [
+  { quote: 'Unbearable. We have renewed for life.', masthead: 'The Gilded Gazette' },
+  { quote: 'Finally, somewhere the help can’t afford to read about.', masthead: 'Trust Fund Times' },
+  { quote: 'I didn’t know email could be this expensive. I wept.', masthead: 'Heir & Now' },
+  { quote: 'Five stars. We were not permitted to give six.', masthead: 'Yacht Quarterly' },
+  { quote: 'The poor will never understand it, and that is the point.', masthead: 'The Offshore Review' },
+  { quote: 'Our editor applied. Our editor is no longer our editor.', masthead: 'Monaco Morning' },
 ];
 
 const stats = [
@@ -99,12 +100,21 @@ const overheard = [
   </section>
 
   <!-- Clientele strip -->
-  <section class="clientele" aria-label="Clientele">
-    <div class="container clientele__inner">
-      <p class="clientele__label">Entrusted by clients we are not permitted to name</p>
-      <ul class="clientele__list">
-        {clientele.map((c) => <li>{c}</li>)}
-      </ul>
+  <section class="press" aria-label="Press">
+    <p class="press__label container">As reviewed by publications our members happen to own</p>
+    <div class="press__marquee">
+      {
+        [0, 1].map((copy) => (
+          <ul class="press__track" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {press.map((p) => (
+              <li class="press__item">
+                <span class="press__quote">“{p.quote}”</span>
+                <span class="press__masthead">{p.masthead}</span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
     </div>
   </section>
 
@@ -435,38 +445,67 @@ const overheard = [
   }
 
   /* Clientele */
-  .clientele {
+  .press {
+    padding-block: 34px 38px;
     border-bottom: 1px solid var(--border);
+    overflow: hidden;
   }
-  .clientele__inner {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 48px;
-    padding-block: 30px;
-  }
-  .clientele__label {
-    margin: 0;
+  .press__label {
+    margin: 0 auto 24px;
+    font-family: var(--font-display);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    font-family: var(--font-display);
     color: var(--text-secondary);
-    max-width: 16em;
   }
-  .clientele__list {
+  .press__marquee {
+    display: flex;
+    width: max-content;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .press__track {
+    display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
+    animation: press-scroll 60s linear infinite;
+  }
+  .press:hover .press__track {
+    animation-play-state: paused;
+  }
+  @keyframes press-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .press__track {
+      animation: none;
+    }
+  }
+  .press__item {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px 32px;
+    flex-direction: column;
+    gap: 10px;
+    width: 340px;
+    padding: 0 40px;
+    border-left: 1px solid var(--border);
+  }
+  .press__quote {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: 16px;
-    color: var(--stone-700);
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--stone-800);
+  }
+  .press__masthead {
+    font-family: var(--font-logo);
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-text);
   }
 
   /* Intro */
@@ -871,13 +910,6 @@ const overheard = [
 
   /* Responsive */
   @media (max-width: 1024px) {
-    .clientele__inner {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .clientele__list {
-      justify-content: flex-start;
-    }
     .stats__grid {
       grid-template-columns: repeat(2, 1fr);
       row-gap: 48px;
@@ -933,8 +965,9 @@ const overheard = [
       padding-top: 24px;
       border-top: 1px solid var(--border);
     }
-    .clientele__list {
-      font-size: 17px;
+    .press__item {
+      width: 280px;
+      padding: 0 28px;
     }
   }
 </style>
