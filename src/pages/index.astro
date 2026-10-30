@@ -4,6 +4,54 @@ import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import { images, technologyServices, lifestyleServices, tiers, formatPrice } from '../data/site';
 
+// Hero headlines: one is picked at random on every visit. Each has three lines, with the last word set in <em>.
+const heroes = [
+  {
+    lines: ['Beautiful people deserve', 'beautiful servers.', 'Everyone else has <em>Gmail</em>.'],
+    lede: 'We host your inbox on hardware with its own sommelier, back up your data to a server room with a doorman, and change your passwords before you suffer the indignity of forgetting them.',
+  },
+  {
+    lines: ['Your data has never', 'flown commercial.', 'Neither should <em>you</em>.'],
+    lede: 'Every byte you send leaves from a private terminal, skips security, and lands before the rest of the internet has finished boarding.',
+  },
+  {
+    lines: ['Your server has a butler.', 'Your butler has a server.', 'Your neighbours have <em>Outlook</em>.'],
+    lede: 'Your hardware is cared for by staff who curtsy to it before maintenance. Next door, someone is still waiting for an update to install.',
+  },
+  {
+    lines: ['Free email is for people', 'who think free is', 'a <em>compliment</em>.'],
+    lede: 'Our members have never used anything free, apart from the occasional compliment, which they consider a tax paid by everyone else.',
+  },
+  {
+    lines: ['Some people keep their', 'files in the cloud.', 'Ours keep them <em>above it</em>.'],
+    lede: 'Your photographs, contracts and regrets are stored at an altitude ordinary data cannot afford, in a server room with better views than most people’s homes.',
+  },
+  {
+    lines: ['The rich don’t share.', 'Not their yachts.', 'Not their <em>servers</em>.'],
+    lede: 'Shared hosting is for people who share bathrooms. Our members’ data has its own building, its own gate and its own guards.',
+  },
+  {
+    lines: ['Your data deserves', 'a private island. Most', 'data gets <em>a timeshare</em>.'],
+    lede: 'Ordinary data spends its life in rented rooms, shared with strangers and checked out by eleven. Yours owns the island, the jetty and the weather.',
+  },
+  {
+    lines: ['Some people have friends.', 'Our members have', '<em>a waiting list</em>.'],
+    lede: 'Ordinary people make friends. Our members select them, from a shortlist, after interviews, and occasionally return them.',
+  },
+  {
+    lines: ['Your assistant anticipates', 'your needs. Your mirror', 'anticipates your <em>compliments</em>.'],
+    lede: 'Our staff know what you want before you do, and what you look like before you check. Both are always correct, and both are always flattering.',
+  },
+  {
+    lines: ['Beauty is subjective.', 'Our admissions', 'are <em>not</em>.'],
+    lede: 'We do not judge books by their covers. We judge applicants by them, and we have declined several bestsellers.',
+  },
+  {
+    lines: ['The finest things in life', 'are free. That’s why', 'we <em>don’t offer them</em>.'],
+    lede: 'Love, friendship and a walk in the park cost nothing, and our members can tell. Everything we provide is invoiced, insured and impossible to get anywhere else.',
+  },
+];
+
 // Fictional publications, all of them owned by members.
 const press = [
   { quote: 'Unbearable. We have renewed for life.', masthead: 'The Gilded Gazette' },
@@ -76,22 +124,24 @@ const overheard = [
 
     <div class="container hero__content on-dark">
       <p class="eyebrow hero__eyebrow">Private Technology &amp; Lifestyle Concierge. Probably not for you.</p>
-      <h1 class="display hero__title">
-        <span class="hero__line"><span>Beautiful people deserve</span></span>
-        <span class="hero__line"><span>beautiful servers.</span></span>
-        <span class="hero__line"><span>Everyone else has <em>Gmail</em>.</span></span>
+      <h1 class="display hero__title" data-hero-title>
+        {heroes[0].lines.map((line) => <span class="hero__line"><span set:html={line} /></span>)}
       </h1>
       <div class="hero__foot">
-        <p class="hero__lede">
-          We host your inbox on hardware with its own sommelier, back up your data to a server room with a doorman, and
-          change your passwords before you suffer the indignity of forgetting them.
-        </p>
+        <p class="hero__lede" data-hero-lede>{heroes[0].lede}</p>
         <div class="hero__actions">
           <a href="/apply/" class="btn btn--light">Apply anyway <Icon name="arrow" /></a>
           <a href="/services/" class="btn btn--ghost-light">See what you can’t afford</a>
         </div>
       </div>
     </div>
+
+    <script is:inline define:vars={{ heroes }}>
+      // Swap in a random headline before the first paint; without JS the first one stays.
+      const hero = heroes[Math.floor(Math.random() * heroes.length)];
+      document.querySelectorAll('[data-hero-title] .hero__line > span').forEach((el, i) => (el.innerHTML = hero.lines[i]));
+      document.querySelector('[data-hero-lede]').textContent = hero.lede;
+    </script>
 
     <div class="hero__meta container">
       <span>Geneva · Monaco · A yacht we’d rather not name</span>
@@ -598,7 +648,8 @@ const overheard = [
   .hero__line {
     display: block;
     overflow: hidden;
-    padding-bottom: 0.06em;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.08em;
   }
   .hero__line > span {
     display: inline-block;
