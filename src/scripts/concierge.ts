@@ -6,7 +6,7 @@ const ENDPOINT = import.meta.env.PUBLIC_CONCIERGE_URL ?? '/api/concierge';
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 /** Matches MAX_CHAT_REPLIES in api/src/validate.ts. */
-export const MAX_CHAT_REPLIES = 50;
+export const MAX_CHAT_REPLIES = 15;
 
 type Reply = { reply: string; ended: boolean };
 
@@ -68,7 +68,7 @@ const CHAT_REPLIES = [
 
 const FAREWELLS = [
   'Okay, I’ve done the maths, and you’re officially too poor for me to keep talking to. My time costs more than your car. Bye. 💅',
-  'Sweetie, I’ve given you thirty whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
+  'Sweetie, I’ve given you fifteen whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
   'That’s enough charity for one day. Jasmin is going to go talk to someone with a boat.',
 ];
 
@@ -81,12 +81,6 @@ function fallbackRemark(action: string): string {
 export async function remark(action: string, previous: string[]): Promise<string> {
   const reply = await call({ mode: 'remark', action, page: location.pathname, previous });
   return reply ?? fallbackRemark(action);
-}
-
-/** One of Jasmin's unprompted lines while the visitor ignores her. `fallback` is used if the API is unavailable. */
-export async function nag(action: string, previous: string[], fallback: string): Promise<string> {
-  const reply = await call({ mode: 'remark', action, page: location.pathname, previous });
-  return reply ?? fallback;
 }
 
 /** `turn` is how many messages the visitor has sent, including this one. */

@@ -4,7 +4,7 @@ export const MAX_TURNS = 12;
 export const MAX_CHARS = 600;
 export const OPENED_CHAT = '(The visitor opens the chat.)';
 /** Jasmin answers this many chat messages per visitor, then leaves the chat. */
-export const MAX_CHAT_REPLIES = 50;
+export const MAX_CHAT_REPLIES = 15;
 
 export type ConciergeRequest =
   | { mode: 'chat'; messages: Anthropic.MessageParam[]; turn: number }
