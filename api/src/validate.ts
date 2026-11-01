@@ -3,13 +3,12 @@ import type Anthropic from '@anthropic-ai/sdk';
 export const MAX_TURNS = 12;
 export const MAX_CHARS = 600;
 export const OPENED_CHAT = '(The visitor opens the chat.)';
-/** Jasmin answers this many chat messages per visitor, then leaves the chat. */
-export const MAX_CHAT_REPLIES = 15;
+/** Jasmin answers this many chat messages per visitor (that is, this many Claude calls), then leaves the chat. */
+export const MAX_CHAT_REPLIES = 5;
 
 export type ConciergeRequest =
   | { mode: 'chat'; messages: Anthropic.MessageParam[]; turn: number }
-  | { mode: 'verdict'; application: string }
-  | { mode: 'remark'; action: string; page: string; previous: string[] };
+  | { mode: 'verdict'; application: string };
 
 const APPLICATION_FIELDS = [
   'address',
@@ -72,19 +71,6 @@ export function parseRequest(raw: unknown): ConciergeRequest | null {
     }
     if (!lines.length) return null;
     return { mode: 'verdict', application: lines.join('\n') };
-  }
-
-  if (body.mode === 'remark') {
-    const action = typeof body.action === 'string' ? body.action.trim().slice(0, 200) : '';
-    if (!action) return null;
-    const page = typeof body.page === 'string' ? body.page.trim().slice(0, 100) : '';
-    const previous = Array.isArray(body.previous)
-      ? body.previous
-          .filter((p): p is string => typeof p === 'string')
-          .slice(-12)
-          .map((p) => p.slice(0, 300))
-      : [];
-    return { mode: 'remark', action, page, previous };
   }
 
   return null;

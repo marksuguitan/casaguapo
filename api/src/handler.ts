@@ -1,10 +1,19 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { CONCIERGE_SYSTEM, FAREWELL_INSTRUCTION, GOODBYE_REPLY, REMARK_SYSTEM, VERDICT_SYSTEM } from './prompts';
-import { MAX_CHAT_REPLIES, parseRequest } from './validate';
+import { CONCIERGE_SYSTEM, FAREWELL_INSTRUCTION, GOODBYE_REPLY, VERDICT_SYSTEM } from './prompts';
+import { claim, visitorIp } from './usage';
+import { MAX_CHAT_REPLIES, parseRequest, type ConciergeRequest } from './validate';
 
 const MODEL = process.env.CLAUDE_MODEL ?? 'claude-sonnet-5-5';
+// DynamoDB table that counts Claude calls. Unset in local runs, where only the browser's count applies.
+const USAGE_TABLE = process.env.USAGE_TABLE;
+/** Claude calls allowed per day across all visitors, as a hard ceiling on spend. */
+const DAILY_LIMIT = Number(process.env.DAILY_CLAUDE_LIMIT) || 500;
+/** Application verdicts per visitor per day. */
+const MAX_VERDICTS = 3;
+/** countCall's answer when the site-wide daily ceiling is reached. */
+const BUSY = -1;
 
 let client: Anthropic | undefined;
 
@@ -44,22 +53,30 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   const req = parseRequest(raw);
   if (!req) return json(400, { error: 'invalid_request' });
 
-  // Jasmin answers MAX_CHAT_REPLIES messages, the last one with a rude goodbye, then stops calling Claude.
-  if (req.mode === 'chat' && req.turn > MAX_CHAT_REPLIES) return json(200, { reply: GOODBYE_REPLY, ended: true });
-  const farewell = req.mode === 'chat' && req.turn === MAX_CHAT_REPLIES;
+  // Jasmin answers MAX_CHAT_REPLIES messages per visitor, the last one with a rude goodbye, then stops calling
+  // Claude. The count is kept server-side by IP, so clearing the browser or editing the request doesn't reset it.
+  let used: number | null;
+  try {
+    used = await countCall(event, req);
+  } catch (error) {
+    // Fail closed: without a working counter, don't spend. The browser falls back to scripted lines.
+    console.error('Usage counter failure:', error);
+    return json(503, { error: 'unavailable' });
+  }
+  if (used === null) {
+    return req.mode === 'chat' ? json(200, { reply: GOODBYE_REPLY, ended: true }) : json(429, { error: 'limit' });
+  }
+  if (used === BUSY) return json(429, { error: 'busy' });
+  const farewell = req.mode === 'chat' && used >= MAX_CHAT_REPLIES;
 
   let system: string;
   let messages: Anthropic.Beta.BetaMessageParam[];
   if (req.mode === 'chat') {
     system = CONCIERGE_SYSTEM;
     messages = req.messages;
-  } else if (req.mode === 'verdict') {
+  } else {
     system = VERDICT_SYSTEM;
     messages = [{ role: 'user', content: `Membership application:\n\n${req.application}` }];
-  } else {
-    system = REMARK_SYSTEM;
-    const earlier = req.previous.length ? `\nYour earlier remarks: ${req.previous.join(' | ')}` : '';
-    messages = [{ role: 'user', content: `Page: ${req.page || 'unknown'}\nThe visitor just: ${req.action}${earlier}` }];
   }
 
   try {
@@ -101,4 +118,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     }
     return json(502, { error: 'unavailable' });
   }
+}
+
+/**
+ * Records one Claude call for this visitor. Returns how many calls of this kind the visitor has made today
+ * (including this one), null if they are out of allowance, or BUSY if the site-wide daily ceiling is reached.
+ */
+async function countCall(event: APIGatewayProxyEventV2, req: ConciergeRequest): Promise<number | null> {
+  if (!USAGE_TABLE) return req.mode === 'chat' ? (req.turn > MAX_CHAT_REPLIES ? null : req.turn) : 1;
+  const ip = visitorIp(event);
+  const used =
+    req.mode === 'chat'
+      ? await claim(USAGE_TABLE, `chat#${ip}`, MAX_CHAT_REPLIES)
+      : await claim(USAGE_TABLE, `verdict#${ip}`, MAX_VERDICTS);
+  if (used === null) return null;
+  if ((await claim(USAGE_TABLE, 'all', DAILY_LIMIT)) === null) return BUSY;
+  return used;
 }

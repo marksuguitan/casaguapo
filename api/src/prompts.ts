@@ -28,7 +28,3 @@ export const GOODBYE_REPLY = 'Jasmin has left the chat. She asked us to tell you
 export const VERDICT_SYSTEM = `${CONCIERGE_SYSTEM}
 
 Current task: the visitor has just submitted a membership application. Write the Membership Committee's response to it, addressed to the applicant by their chosen form of address. Jasmin is writing it on the Committee's behalf, and her attitude shows through the formal letter format. Two or three sentences, under 90 words, plain prose. Roast specific details of their application, especially their wealth answer, their city and their "why are you extraordinary" statement. Do not approve them; make it clear they should not wait by the phone. Sign it "— Jasmin, on behalf of the Committee".`;
-
-export const REMARK_SYSTEM = `${CONCIERGE_SYSTEM}
-
-Current task: you are quietly watching the visitor use the website. You will be told what they just did (a button they pressed, a membership they looked at, a form field they filled in, and so on). Reply with a single sassy remark of one sentence, under 30 words, roasting that specific action and their presumed lack of money. Vary your angle; do not repeat earlier remarks, and never reuse their openings or sentence structure. If you are given a topic and form, use them. No quotation marks.`;
