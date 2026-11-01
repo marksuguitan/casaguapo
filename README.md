@@ -9,7 +9,7 @@ A private technology and lifestyle concierge for the world's most beautiful, wea
 | `src/` | The website, built with [Astro](https://astro.build) as a static site |
 | `src/styles/tokens.css` | The design system tokens (Amber accent from `#E69B00`, warm neutrals, Manrope and Inter, spacing, radii, elevation, motion) |
 | `src/pages/system.astro` | The brand standards page at `/system/`, which renders every token and component |
-| `src/components/Concierge.astro` | The AI Concierge: a chat panel, plus remarks on whatever the visitor clicks, ticks or types |
+| `src/components/Concierge.astro` | The AI Concierge: a chat panel, plus pre-written remarks on whatever the visitor clicks, ticks or types |
 | `api/` | The Concierge's AWS Lambda function, which calls Claude (`claude-sonnet-5-5`) |
 | `infra/` | AWS SAM template and deploy script: S3 + CloudFront for the site, API Gateway + Lambda for `/api/concierge` |
 
@@ -22,7 +22,7 @@ npm install
 npm run dev        # http://localhost:4321
 ```
 
-Locally there is no API, so the Concierge falls back to a small set of built-in remarks. To point the site at a deployed API, set `PUBLIC_CONCIERGE_URL` (for example `https://xxxx.cloudfront.net/api/concierge`) before `npm run dev`.
+Locally there is no API, so the chat falls back to a small set of built-in replies. To point the site at a deployed API, set `PUBLIC_CONCIERGE_URL` (for example `https://xxxx.cloudfront.net/api/concierge`) before `npm run dev`.
 
 API tests and type checks:
 
@@ -35,17 +35,18 @@ npm run typecheck
 
 ## The Concierge
 
-`POST /api/concierge` takes one of three modes:
+`POST /api/concierge` takes one of two modes:
 
 - `chat`: `{ mode: "chat", messages: [{ role, content }] }`, for the chat panel.
-- `remark`: `{ mode: "remark", action, page, previous }`, sent when the visitor interacts with the page (buttons, links, FAQ items, radio buttons, checkboxes, selects, text fields). Returns a one-sentence remark.
 - `verdict`: `{ mode: "verdict", application }`, sent when the application form is submitted. Returns the Committee's letter.
 
 The voice and its boundaries live in `api/src/prompts.ts`. It mocks the visitor's presumed lack of wealth only, never their appearance or identity, and drops the act if someone describes real hardship.
 
-Once per visit, Jasmin starts talking 2 seconds after the visitor first scrolls and adds a line every 13 seconds until the visitor clicks her. These are 49 pre-written lines, said in order (`NAGS` in `src/components/Concierge.astro`), so they don't call Claude, and she goes quiet after the last one. She answers 15 chat messages per visitor. Clicking one of her remarks opens the chat with that remark as her opening line. The 15th reply is a rude goodbye, after which the chat shows “Jasmin left the chat” and stays closed for 24 hours (remembered in the browser's localStorage). The Lambda enforces the same limit and stops calling Claude for any later message (`MAX_CHAT_REPLIES` in `api/src/validate.ts`).
+Once per visit, Jasmin starts talking 2 seconds after the visitor first scrolls and adds a line every 13 seconds until the visitor clicks her. These are 49 pre-written lines, said in order (`NAGS` in `src/components/Concierge.astro`), so they don't call Claude, and she goes quiet after the last one. Her remarks on whatever the visitor clicks, ticks or types are also pre-written (`src/scripts/concierge.ts`). Everything she says is scripted until the visitor sends a message in the chat; only then does Claude answer. Clicking one of her remarks opens the chat with that remark as her opening line.
 
-Spend guardrails: the browser waits 4 seconds between remarks and stops asking for remarks after 60 per session; the Lambda caps message length and history; API Gateway throttles to 5 requests a second (burst 10) across all visitors; replies use low effort and short outputs. Adjust `ApiRateLimit` and `ApiBurstLimit` in `infra/template.yaml` if needed.
+She answers 5 chat messages per visitor, which is 5 Claude calls. The 5th reply is a rude goodbye, after which the chat shows “Jasmin left the chat” and stays closed for 24 hours (remembered in the browser's localStorage). The Lambda enforces the same limit by visitor IP, counted in DynamoDB per UTC day, and sends a canned goodbye without calling Claude for any later message (`MAX_CHAT_REPLIES` in `api/src/validate.ts`).
+
+Spend guardrails: Claude is only called for chat messages (5 per visitor per day) and application verdicts (3 per visitor per day); the Lambda also stops calling Claude after `DailyClaudeLimit` calls per day across all visitors (500 by default), and fails closed if the counter is unavailable; the Lambda caps message length and history; API Gateway throttles to 5 requests a second (burst 10) across all visitors; replies use low effort and short outputs. Adjust `ApiRateLimit`, `ApiBurstLimit` and `DailyClaudeLimit` in `infra/template.yaml` if needed.
 
 ## Deploying to AWS
 

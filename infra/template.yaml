@@ -19,6 +19,10 @@ Parameters:
   ApiBurstLimit:
     Type: Number
     Default: 10
+  DailyClaudeLimit:
+    Type: Number
+    Default: 500
+    Description: Most Claude calls the Concierge makes per UTC day across all visitors, as a hard ceiling on spend.
   DomainName:
     Type: String
     Default: ''
@@ -124,6 +128,21 @@ Resources:
         ThrottlingRateLimit: !Ref ApiRateLimit
         ThrottlingBurstLimit: !Ref ApiBurstLimit
 
+  # Counts Claude calls per visitor (by IP) and per day, so Jasmin's limits hold on the server.
+  UsageTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expires
+        Enabled: true
+
   ConciergeFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -133,9 +152,15 @@ Resources:
         Variables:
           ANTHROPIC_KEY_PARAM: !Sub '/${AnthropicKeyParameterName}'
           CLAUDE_MODEL: !Ref ClaudeModel
+          USAGE_TABLE: !Ref UsageTable
+          DAILY_CLAUDE_LIMIT: !Ref DailyClaudeLimit
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Ref AnthropicKeyParameterName
+        - Statement:
+            - Effect: Allow
+              Action: dynamodb:UpdateItem
+              Resource: !GetAtt UsageTable.Arn
       Events:
         Concierge:
           Type: HttpApi

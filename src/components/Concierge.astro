@@ -515,7 +515,9 @@ import Icon from './Icon.astro';
     remarkBox.hidden = false;
 
     const previous = previousRemarks();
-    const text = await remark(action, previous);
+    const text = remark(action, previous);
+    // Pre-written, so it's instant; a short pause keeps the typing dots believable.
+    await new Promise((resolve) => window.setTimeout(resolve, 700 + Math.random() * 600));
     session.set(HISTORY_KEY, JSON.stringify([...previous, text].slice(-5)));
     remarkText.textContent = text;
     lastRemark = text;
@@ -647,7 +649,8 @@ import Icon from './Icon.astro';
 
   // Jasmin starts talking 2 seconds after the visitor first scrolls (once per visit) and adds another line every
   // 13 seconds until the visitor clicks her. These lines are pre-written and said in order, so they cost nothing;
-  // she stops after the last one. Claude only takes over once the visitor opens the chat.
+  // she stops after the last one. Everything she says is scripted until the visitor sends a chat message; only
+  // then does Claude answer, for MAX_CHAT_REPLIES messages, before she leaves.
   const AUTO_OPEN_KEY = 'cg-chat-auto-opened';
   const NAGS = [
     'Hello? I can see you, you know.',

@@ -66,12 +66,8 @@ test('flattens an application into known fields only', () => {
   assert.equal(parseRequest({ mode: 'verdict', application: {} }), null);
 });
 
-test('accepts a remark about a UI action and trims its inputs', () => {
-  const req = parseRequest({ mode: 'remark', action: 'x'.repeat(500), page: '/membership/', previous: [1, 'Earlier.'] });
-  assert.ok(req && req.mode === 'remark');
-  assert.equal(req.action.length, 200);
-  assert.deepEqual(req.previous, ['Earlier.']);
-  assert.equal(parseRequest({ mode: 'remark', action: '  ' }), null);
+test('rejects remarks, which no longer call Claude', () => {
+  assert.equal(parseRequest({ mode: 'remark', action: 'pressed a button', page: '/' }), null);
 });
 
 test('counts the visitor’s messages, trusting the higher of history and the reported count', () => {

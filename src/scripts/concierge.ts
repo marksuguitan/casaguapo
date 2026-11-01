@@ -1,12 +1,13 @@
-// Client for the AI Concierge (see api/). When the API is unreachable, as in local
-// development, the Concierge falls back to a small repertoire of house remarks.
+// Client for the AI Concierge (see api/). Jasmin's remarks on what the visitor clicks are pre-written and never
+// call Claude; only the chat (once the visitor sends a message) and the application verdict do. When the API is
+// unreachable, as in local development, those fall back to pre-written lines too.
 
 const ENDPOINT = import.meta.env.PUBLIC_CONCIERGE_URL ?? '/api/concierge';
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 /** Matches MAX_CHAT_REPLIES in api/src/validate.ts. */
-export const MAX_CHAT_REPLIES = 15;
+export const MAX_CHAT_REPLIES = 5;
 
 type Reply = { reply: string; ended: boolean };
 
@@ -25,11 +26,11 @@ async function request(body: Record<string, unknown>): Promise<Reply | null> {
   }
 }
 
-async function call(body: Record<string, unknown>): Promise<string | null> {
-  return (await request(body))?.reply ?? null;
-}
-
-const pick = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+const pick = <T>(list: T[], avoid: T[] = []) => {
+  const fresh = list.filter((x) => !avoid.includes(x));
+  const from = fresh.length ? fresh : list;
+  return from[Math.floor(Math.random() * from.length)];
+};
 
 const REMARKS = [
   'Oh, you clicked that. Bold move for someone on a prepaid plan.',
@@ -68,19 +69,15 @@ const CHAT_REPLIES = [
 
 const FAREWELLS = [
   'Okay, I’ve done the maths, and you’re officially too poor for me to keep talking to. My time costs more than your car. Bye. 💅',
-  'Sweetie, I’ve given you fifteen whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
+  'Sweetie, I’ve given you five whole replies, which is more than your bank has ever given you. I’m leaving now. Don’t follow me.',
   'That’s enough charity for one day. Jasmin is going to go talk to someone with a boat.',
 ];
 
-function fallbackRemark(action: string): string {
-  if (/\$|price|tier|membership|basic|ultra|invitation/i.test(action)) return pick(PRICING_REMARKS);
-  if (/typed|field|selected|chose|form|answer|ticked/i.test(action)) return pick(FORM_REMARKS);
-  return pick(REMARKS);
-}
-
-export async function remark(action: string, previous: string[]): Promise<string> {
-  const reply = await call({ mode: 'remark', action, page: location.pathname, previous });
-  return reply ?? fallbackRemark(action);
+/** A pre-written remark on what the visitor just did, avoiding her recent ones. No API call. */
+export function remark(action: string, previous: string[]): string {
+  if (/\$|price|tier|membership|basic|ultra|invitation/i.test(action)) return pick(PRICING_REMARKS, previous);
+  if (/typed|field|selected|chose|form|answer|ticked/i.test(action)) return pick(FORM_REMARKS, previous);
+  return pick(REMARKS, previous);
 }
 
 /** `turn` is how many messages the visitor has sent, including this one. */
@@ -92,7 +89,7 @@ export async function chat(messages: ChatTurn[], turn: number): Promise<Reply> {
 }
 
 export async function verdict(application: Record<string, string | string[]>): Promise<string> {
-  const reply = await call({ mode: 'verdict', application });
+  const reply = (await request({ mode: 'verdict', application }))?.reply;
   if (reply) return reply;
   const name = typeof application.address === 'string' && application.address ? application.address : 'Applicant';
   return `Dear ${name}, we got your application. We read it out loud at the staff meeting, and it was the highlight of everyone’s week. Don’t wait by the phone, honey; it’s not going to ring. — Jasmin, on behalf of the Committee`;
